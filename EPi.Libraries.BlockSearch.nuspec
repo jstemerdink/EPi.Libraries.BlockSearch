@@ -6,7 +6,7 @@
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
-    <projectUrl>https://github.com/jstemerdink/EPi.Libraries.Aspects/</projectUrl>
+    <projectUrl>https://github.com/jstemerdink/EPi.Libraries.BlockSearch/</projectUrl>
     <iconUrl>http://world.episerver.com/PageFiles/3/Icons/Nuget.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
@@ -18,4 +18,7 @@
       <dependency id="EPiServer.CMS.UI.Core" version="[7.8.2, 8.0)" />
     </dependencies>
   </metadata>
+  <files>
+    <file src="readme.txt" target="" />
+  </files>
 </package>
