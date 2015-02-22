@@ -2,7 +2,9 @@
 
 By Jeroen Stemerdink
 
-![AppVeyor status](https://ci.appveyor.com/api/projects/status/github/jstemerdink/EPi.Libraries.BlockSearch?branch=master&svg=true)
+![AppVeyor status](https://ci.appveyor.com/api/projects/status/3qrrg548g02j8eej/branch/master?svg=true)
+
+[![Build status](https://ci.appveyor.com/api/projects/status/3qrrg548g02j8eej/branch/master?svg=true)](https://ci.appveyor.com/project/jstemerdink/epi-libraries-blocksearch/branch/master)
 
 ## About
 
