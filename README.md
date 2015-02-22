@@ -2,6 +2,8 @@
 
 By Jeroen Stemerdink
 
+![AppVeyor status](https://ci.appveyor.com/api/projects/status/github/jstemerdink/EPi.Libraries.BlockSearch?branch=master&svg=true)
+
 ## About
 
 This week I needed to add Blocks used on a page to EPiServer Search Index as content of the page they were used on.
