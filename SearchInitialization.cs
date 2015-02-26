@@ -52,7 +52,7 @@ namespace EPi.Libraries.BlockSearch
     {
         #region Static Fields
 
-        private static readonly ILogger Logger = LogManager.GetLogger();
+        private static readonly ILogger Logger = LogManager.GetLogger(typeof(SearchInitialization));
 
         #endregion
 
