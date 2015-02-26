@@ -1,4 +1,4 @@
-﻿// Copyright© 2014 Jeroen Stemerdink. All Rights Reserved.
+﻿// Copyright© 2015 Jeroen Stemerdink. All Rights Reserved.
 // 
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation
@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -36,22 +37,29 @@ using EPiServer.DataAbstraction;
 using EPiServer.DataAccess;
 using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
+using EPiServer.Logging;
 using EPiServer.ServiceLocation;
 using EPiServer.SpecializedProperties;
 
 namespace EPi.Libraries.BlockSearch
 {
     /// <summary>
-    /// Class SearchInitialization.
+    ///     Class SearchInitialization.
     /// </summary>
     [InitializableModule]
     [ModuleDependency(typeof(FrameworkInitialization))]
     public class SearchInitialization : IInitializableModule
     {
+        #region Static Fields
+
+        private static readonly ILogger Logger = LogManager.GetLogger();
+
+        #endregion
+
         #region Properties
 
         /// <summary>
-        /// Gets or sets the content type respository.
+        ///     Gets or sets the content type respository.
         /// </summary>
         /// <value>The content type respository.</value>
         protected Injected<IContentTypeRepository> ContentTypeRepository { get; set; }
@@ -61,32 +69,36 @@ namespace EPi.Libraries.BlockSearch
         #region Public Methods and Operators
 
         /// <summary>
-        /// Initializes this instance.
+        ///     Initializes this instance.
         /// </summary>
         /// <param name="context">The context.</param>
-        /// <remarks>Gets called as part of the EPiServer Framework initialization sequence. Note that it will be called
-        /// only once per AppDomain, unless the method throws an exception. If an exception is thrown, the initialization
-        /// method will be called repeadetly for each request reaching the site until the method succeeds.</remarks>
+        /// <remarks>
+        ///     Gets called as part of the EPiServer Framework initialization sequence. Note that it will be called
+        ///     only once per AppDomain, unless the method throws an exception. If an exception is thrown, the initialization
+        ///     method will be called repeadetly for each request reaching the site until the method succeeds.
+        /// </remarks>
         public void Initialize(InitializationEngine context)
         {
-            DataFactory.Instance.PublishingPage += this.OnPublishingPage;
+            DataFactory.Instance.PublishingContent += this.OnPublishingContent;
             DataFactory.Instance.PublishedContent += this.OnPublishedContent;
+
+            Logger.Information("[Blocksearch] Initialized.");
         }
 
         /// <summary>
-        /// Handles the <see cref="E:PublishedContent" /> event.
+        ///     Handles the <see cref="E:PublishedContent" /> event.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="pageEventArgs">The <see cref="ContentEventArgs"/> instance containing the event data.</param>
-        public void OnPublishedContent(object sender, ContentEventArgs pageEventArgs)
+        /// <param name="contentEventArgs">The <see cref="ContentEventArgs" /> instance containing the event data.</param>
+        public void OnPublishedContent(object sender, ContentEventArgs contentEventArgs)
         {
-            if (pageEventArgs == null)
+            if (contentEventArgs == null)
             {
                 return;
             }
 
             // Check if the content that is published is indeed a block.
-            BlockData blockData = pageEventArgs.Content as BlockData;
+            BlockData blockData = contentEventArgs.Content as BlockData;
 
             // If it's not, don't do anything.
             if (blockData == null)
@@ -99,7 +111,7 @@ namespace EPi.Libraries.BlockSearch
 
             // Get the references to this block
             List<ContentReference> referencingContentLinks =
-                linkRepository.Load(pageEventArgs.ContentLink, true)
+                linkRepository.Load(contentEventArgs.ContentLink, true)
                     .Where(
                         link =>
                         link.SoftLinkType == ReferenceType.PageLinkReference
@@ -120,27 +132,41 @@ namespace EPi.Libraries.BlockSearch
                 }
 
                 // Check if the containing page is published.
-                if (!parent.IsPendingPublish)
+                if (parent.IsPendingPublish)
                 {
-                    // Republish the containing page.
+                    continue;
+                }
+
+                // Republish the containing page.
+                try
+                {
                     DataFactory.Instance.Save(parent.CreateWritableClone(), SaveAction.Publish);
+                }
+                catch (AccessDeniedException accessDeniedException)
+                {
+                    Logger.Error(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "[Blocksearch] Not enough accessrights to republish containing pagetype named '{0}'.",
+                            parent.Name),
+                        accessDeniedException);
                 }
             }
         }
 
         /// <summary>
-        /// Raises the page event.
+        ///     Raises the page event.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="pageEventArgs">Event information to send to registered event handlers.</param>
-        public void OnPublishingPage(object sender, PageEventArgs pageEventArgs)
+        /// <param name="contentEventArgs">Event information to send to registered event handlers.</param>
+        public void OnPublishingContent(object sender, ContentEventArgs contentEventArgs)
         {
-            if (pageEventArgs == null)
+            if (contentEventArgs == null)
             {
                 return;
             }
 
-            PageData page = pageEventArgs.Page;
+            PageData page = contentEventArgs.Content as PageData;
 
             if (page == null)
             {
@@ -195,31 +221,29 @@ namespace EPi.Libraries.BlockSearch
         }
 
         /// <summary>
-        /// Preloads the module.
-        /// </summary>
-        /// <param name="parameters">The parameters.</param>
-        /// <remarks>This method is only available to be compatible with "AlwaysRunning" applications in .NET 4 / IIS 7.
-        /// It currently serves no purpose.</remarks>
-        public void Preload(string[] parameters)
-        {
-        }
-
-        /// <summary>
-        /// Resets the module into an uninitialized state.
+        ///     Resets the module into an uninitialized state.
         /// </summary>
         /// <param name="context">The context.</param>
-        /// <remarks><para>
-        /// This method is usually not called when running under a web application since the web app may be shut down very
-        /// abruptly, but your module should still implement it properly since it will make integration and unit testing
-        /// much simpler.
-        /// </para>
-        /// <para>
-        /// Any work done by <see cref="M:EPiServer.Framework.IInitializableModule.Initialize(EPiServer.Framework.Initialization.InitializationEngine)" /> as well as any code executing on <see cref="E:EPiServer.Framework.Initialization.InitializationEngine.InitComplete" /> should be reversed.
-        /// </para></remarks>
+        /// <remarks>
+        ///     <para>
+        ///         This method is usually not called when running under a web application since the web app may be shut down very
+        ///         abruptly, but your module should still implement it properly since it will make integration and unit testing
+        ///         much simpler.
+        ///     </para>
+        ///     <para>
+        ///         Any work done by
+        ///         <see
+        ///             cref="M:EPiServer.Framework.IInitializableModule.Initialize(EPiServer.Framework.Initialization.InitializationEngine)" />
+        ///         as well as any code executing on
+        ///         <see cref="E:EPiServer.Framework.Initialization.InitializationEngine.InitComplete" /> should be reversed.
+        ///     </para>
+        /// </remarks>
         public void Uninitialize(InitializationEngine context)
         {
-            DataFactory.Instance.PublishingPage -= this.OnPublishingPage;
+            DataFactory.Instance.PublishingContent -= this.OnPublishingContent;
             DataFactory.Instance.PublishedContent -= this.OnPublishedContent;
+
+            Logger.Information("[Blocksearch] Uninitialized.");
         }
 
         #endregion
@@ -227,7 +251,7 @@ namespace EPi.Libraries.BlockSearch
         #region Methods
 
         /// <summary>
-        /// Gets the name of the key word property.
+        ///     Gets the name of the key word property.
         /// </summary>
         /// <param name="page">The page.</param>
         /// <returns>System.String.</returns>
@@ -240,7 +264,7 @@ namespace EPi.Libraries.BlockSearch
         }
 
         /// <summary>
-        /// Determines whether the specified self has attribute.
+        ///     Determines whether the specified self has attribute.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="propertyInfo">The propertyInfo.</param>
@@ -253,7 +277,7 @@ namespace EPi.Libraries.BlockSearch
         }
 
         /// <summary>
-        /// Gets the searchable property values.
+        ///     Gets the searchable property values.
         /// </summary>
         /// <param name="contentData">The content data.</param>
         /// <param name="contentType">Type of the content.</param>
@@ -290,16 +314,14 @@ namespace EPi.Libraries.BlockSearch
         }
 
         /// <summary>
-        /// Gets the searchable property values.
+        ///     Gets the searchable property values.
         /// </summary>
         /// <param name="contentData">The content data.</param>
         /// <param name="contentTypeID">The content type identifier.</param>
         /// <returns>IEnumerable&lt;System.String&gt;.</returns>
         private IEnumerable<string> GetSearchablePropertyValues(IContentData contentData, int contentTypeID)
         {
-            return this.GetSearchablePropertyValues(
-                contentData,
-                this.ContentTypeRepository.Service.Load(contentTypeID));
+            return this.GetSearchablePropertyValues(contentData, this.ContentTypeRepository.Service.Load(contentTypeID));
         }
 
         #endregion
