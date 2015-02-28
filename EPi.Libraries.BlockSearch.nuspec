@@ -7,15 +7,15 @@
     <authors>$author$</authors>
     <owners>$author$</owners>
     <projectUrl>https://github.com/jstemerdink/EPi.Libraries.BlockSearch/</projectUrl>
-    <iconUrl>http://world.episerver.com/PageFiles/3/Icons/Nuget.png</iconUrl>
+    <iconUrl>http://jstemerdink.net/images/js-nuget.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes></releaseNotes>
+    <releaseNotes>Updated for EPiServer 8</releaseNotes>
     <copyright>Copyright © Jeroen Stemerdink 2014</copyright>
     <tags>search blocks</tags>
     <dependencies>
-      <dependency id="EPiServer.CMS.Core" version="[7.7.1, 8.0)" />
-      <dependency id="EPiServer.CMS.UI.Core" version="[7.8.2, 8.0)" />
+      <dependency id="EPiServer.CMS.Core" version="[8.0.0, 9.0)" />
+      <dependency id="EPiServer.CMS.UI.Core" version="[8.0.0, 9.0)" />
     </dependencies>
   </metadata>
   <files>
