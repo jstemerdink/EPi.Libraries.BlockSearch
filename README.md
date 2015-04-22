@@ -6,7 +6,7 @@ By Jeroen Stemerdink
 [![Platform](https://img.shields.io/badge/platform-.NET 4.5-blue.svg?style=flat)](https://jstemerdink.wordpress.com/)
 [![Platform](https://img.shields.io/badge/EPiServer-%208.0.0-orange.svg?style=flat)](https://jstemerdink.wordpress.com/)
 [![NuGet](https://img.shields.io/badge/NuGet-Release-blue.svg)](http://nuget.episerver.com/en/OtherPages/Package/?packageId=EPi.Libraries.BlockSearch)
-[![GitHub license](https://img.shields.io/badge/license-MIT%20license-blue.svg?style=flat)]()
+[![GitHub license](https://img.shields.io/badge/license-MIT%20license-blue.svg?style=flat)](https://github.com/jstemerdink/EPi.Libraries.BlockSearch/blob/master/license.txt)
 
 ## About
 
