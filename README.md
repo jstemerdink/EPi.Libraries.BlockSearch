@@ -3,6 +3,10 @@
 By Jeroen Stemerdink
 
 [![Build status](https://ci.appveyor.com/api/projects/status/3qrrg548g02j8eej/branch/master?svg=true)](https://ci.appveyor.com/project/jstemerdink/epi-libraries-blocksearch/branch/master)
+[![Platform](https://img.shields.io/badge/platform-.NET 4.5-blue.svg?style=flat)](https://jstemerdink.wordpress.com/)
+[![Platform](https://img.shields.io/badge/EPiServer-%208.0.0-orange.svg?style=flat)](https://jstemerdink.wordpress.com/)
+[![NuGet](https://img.shields.io/badge/NuGet-Release-blue.svg)](http://nuget.episerver.com/en/OtherPages/Package/?packageId=EPi.Libraries.BlockSearch)
+[![GitHub license](https://img.shields.io/badge/license-MIT%20license-blue.svg?style=flat)]()
 
 ## About
 
@@ -30,9 +34,8 @@ The content of the property marked with ```[AdditionalSearchContent]`` is added 
 
 ## Requirements
 
-* EPiServer >= 7.7.1
-* log4net
-* .Net 4.0
+* EPiServer >= 8.0.0
+* .Net 4.5
 
 ## Deploy
 
