@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution 
 		EPi.Libraries.BlockSearch.nuspec = EPi.Libraries.BlockSearch.nuspec
 		Solution Files\EPiServer.Libraries.ruleset = Solution Files\EPiServer.Libraries.ruleset
 		Solution Files\EPiServer.Libraries.snk = Solution Files\EPiServer.Libraries.snk
+		license.txt = license.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{434037DF-5B72-4434-B744-9F195600D846}"
