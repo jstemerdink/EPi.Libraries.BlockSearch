@@ -10,7 +10,7 @@
     <iconUrl>http://jstemerdink.net/images/js-nuget.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Updated for EPiServer 8</releaseNotes>
+    <releaseNotes>Added null check for block. When duplicating a page, a null exception can occur.</releaseNotes>
     <copyright>Copyright © Jeroen Stemerdink 2014</copyright>
     <tags>search blocks</tags>
     <dependencies>
