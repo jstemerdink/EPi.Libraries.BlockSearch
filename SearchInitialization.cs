@@ -207,10 +207,13 @@ namespace EPi.Libraries.BlockSearch
                 foreach (ContentAreaItem contentAreaItem in contentArea.Items)
                 {
                     IContent blockData = contentAreaItem.GetContent();
-
-                    IEnumerable<string> props = this.GetSearchablePropertyValues(blockData, blockData.ContentTypeID);
-
-                    stringBuilder.AppendFormat(" {0}", string.Join(" ", props));
+                    
+                    //content area item can be null when duplicating a page
+                    if(blockData != null)
+                    {
+                        IEnumerable<string> props = this.GetSearchablePropertyValues(blockData, blockData.ContentTypeID);
+                        stringBuilder.AppendFormat(" {0}", string.Join(" ", props));
+                    }                    
                 }
             }
 
