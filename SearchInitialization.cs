@@ -107,7 +107,16 @@ namespace EPi.Libraries.BlockSearch
             }
 
             // Get the softlink repository.
-            ContentSoftLinkRepository linkRepository = ServiceLocator.Current.GetInstance<ContentSoftLinkRepository>();
+            ContentSoftLinkRepository linkRepository;
+            try
+            {
+                linkRepository = ServiceLocator.Current.GetInstance<ContentSoftLinkRepository>();
+            }
+            catch (ActivationException activationException)
+            {
+                Logger.Error("[Blocksearch] ContentSoftLinkRepository not activated.", activationException);
+                return;
+            }
 
             // Get the references to this block
             List<ContentReference> referencingContentLinks =
@@ -207,16 +216,26 @@ namespace EPi.Libraries.BlockSearch
                 foreach (ContentAreaItem contentAreaItem in contentArea.Items)
                 {
                     IContent blockData = contentAreaItem.GetContent();
-
-                    IEnumerable<string> props = this.GetSearchablePropertyValues(blockData, blockData.ContentTypeID);
-
-                    stringBuilder.AppendFormat(" {0}", string.Join(" ", props));
+                    
+                    //content area item can be null when duplicating a page
+                    if(blockData != null)
+                    {
+                        IEnumerable<string> props = this.GetSearchablePropertyValues(blockData, blockData.ContentTypeID);
+                        stringBuilder.AppendFormat(" {0}", string.Join(" ", props));
+                    }                    
                 }
             }
 
             if (addtionalSearchContentProperty.PropertyType == typeof(string))
             {
-                page[addtionalSearchContentProperty.Name] = TextIndexer.StripHtml(stringBuilder.ToString(), 0);
+                try
+                {
+                    page[addtionalSearchContentProperty.Name] = TextIndexer.StripHtml(stringBuilder.ToString(), 0);
+                }
+                catch (EPiServerException ePiServerException)
+                {
+                    Logger.Error(string.Format(CultureInfo.InvariantCulture, "[Blocksearch] Property {0} dose not exist on {1} .", addtionalSearchContentProperty.Name, page.Name), ePiServerException);
+                }
             }
         }
 
@@ -271,7 +290,16 @@ namespace EPi.Libraries.BlockSearch
         /// <returns><c>true</c> if the specified self has attribute; otherwise, <c>false</c>.</returns>
         private static bool HasAttribute<T>(PropertyInfo propertyInfo) where T : Attribute
         {
-            T attr = (T)Attribute.GetCustomAttribute(propertyInfo, typeof(T));
+            T attr = default(T);
+
+            try
+            {
+                attr = (T)Attribute.GetCustomAttribute(propertyInfo, typeof(T));
+            }
+            catch (Exception exception)
+            {
+                Logger.Error("[Blocksearch] Error getting custom attribute.", exception);
+            }
 
             return attr != null;
         }
