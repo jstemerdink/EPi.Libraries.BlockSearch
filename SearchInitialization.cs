@@ -234,9 +234,10 @@ namespace EPi.Libraries.BlockSearch
                     // Check if the content is indeed a block, and not a page used in a content area
                     BlockData blockData = content as BlockData;
 
-                    //content area item can be null when duplicating a page
+                    //Content area is not a block, but probably a page used as a teaser.
                     if (blockData == null)
                     {
+                        Logger.Information("[Blocksearch] Contentarea item is not block data. Skipping update.", content.Name);
                         continue;
                     }
 
