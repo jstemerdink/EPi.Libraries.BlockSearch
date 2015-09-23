@@ -14,7 +14,7 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>37ad1151</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>f11d3d2d</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -58,78 +58,60 @@
       <Private>True</Private>
       <HintPath>packages\Castle.Windsor.3.2.0\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer, Version=8.0.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\EPiServer.CMS.Core.8.0.0\lib\net45\EPiServer.dll</HintPath>
+    <Reference Include="EPiServer, Version=9.0.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>packages\EPiServer.CMS.Core.9.0.3\lib\net45\EPiServer.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.ApplicationModules, Version=8.0.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\EPiServer.Framework.8.0.0\lib\net45\EPiServer.ApplicationModules.dll</HintPath>
+    <Reference Include="EPiServer.ApplicationModules, Version=9.0.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>packages\EPiServer.Framework.9.0.3\lib\net45\EPiServer.ApplicationModules.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.BaseLibrary, Version=8.0.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\EPiServer.CMS.Core.8.0.0\lib\net45\EPiServer.BaseLibrary.dll</HintPath>
+    <Reference Include="EPiServer.Configuration, Version=9.0.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>packages\EPiServer.CMS.Core.9.0.3\lib\net45\EPiServer.Configuration.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.Configuration, Version=8.0.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\EPiServer.CMS.Core.8.0.0\lib\net45\EPiServer.Configuration.dll</HintPath>
+    <Reference Include="EPiServer.Data, Version=9.0.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>packages\EPiServer.Framework.9.0.3\lib\net45\EPiServer.Data.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.Data, Version=8.0.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\EPiServer.Framework.8.0.0\lib\net45\EPiServer.Data.dll</HintPath>
+    <Reference Include="EPiServer.Data.Cache, Version=9.0.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>packages\EPiServer.Framework.9.0.3\lib\net45\EPiServer.Data.Cache.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.Data.Cache, Version=8.0.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\EPiServer.Framework.8.0.0\lib\net45\EPiServer.Data.Cache.dll</HintPath>
+    <Reference Include="EPiServer.Enterprise, Version=9.0.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>packages\EPiServer.CMS.Core.9.0.3\lib\net45\EPiServer.Enterprise.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.Enterprise, Version=8.0.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\EPiServer.CMS.Core.8.0.0\lib\net45\EPiServer.Enterprise.dll</HintPath>
+    <Reference Include="EPiServer.Events, Version=9.0.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>packages\EPiServer.Framework.9.0.3\lib\net45\EPiServer.Events.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.Events, Version=8.0.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\EPiServer.Framework.8.0.0\lib\net45\EPiServer.Events.dll</HintPath>
+    <Reference Include="EPiServer.Framework, Version=9.0.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>packages\EPiServer.Framework.9.0.3\lib\net45\EPiServer.Framework.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.Framework, Version=8.0.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\EPiServer.Framework.8.0.0\lib\net45\EPiServer.Framework.dll</HintPath>
+    <Reference Include="EPiServer.ImageLibrary">
+      <HintPath>packages\EPiServer.CMS.Core.9.0.3\lib\net45\EPiServer.ImageLibrary.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.ImageLibrary, Version=8.0.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\EPiServer.CMS.Core.8.0.0\lib\net45\EPiServer.ImageLibrary.dll</HintPath>
+    <Reference Include="EPiServer.Licensing, Version=9.0.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>packages\EPiServer.Framework.9.0.3\lib\net45\EPiServer.Licensing.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.Implementation, Version=8.0.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\EPiServer.CMS.Core.8.0.0\lib\net45\EPiServer.Implementation.dll</HintPath>
+    <Reference Include="EPiServer.LinkAnalyzer, Version=9.0.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>packages\EPiServer.CMS.Core.9.0.3\lib\net45\EPiServer.LinkAnalyzer.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.Licensing, Version=8.0.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\EPiServer.Framework.8.0.0\lib\net45\EPiServer.Licensing.dll</HintPath>
+    <Reference Include="EPiServer.Shell, Version=9.0.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>packages\EPiServer.Framework.9.0.3\lib\net45\EPiServer.Shell.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.LinkAnalyzer, Version=8.0.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\EPiServer.CMS.Core.8.0.0\lib\net45\EPiServer.LinkAnalyzer.dll</HintPath>
+    <Reference Include="EPiServer.Web.WebControls, Version=9.0.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>packages\EPiServer.CMS.Core.9.0.3\lib\net45\EPiServer.Web.WebControls.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.Logging.Log4Net">
-      <HintPath>packages\EPiServer.Logging.Log4Net.1.0.0\lib\net45\EPiServer.Logging.Log4Net.dll</HintPath>
-    </Reference>
-    <Reference Include="EPiServer.Shell, Version=8.0.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\EPiServer.Framework.8.0.0\lib\net45\EPiServer.Shell.dll</HintPath>
-    </Reference>
-    <Reference Include="EPiServer.Web.WebControls, Version=8.0.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\EPiServer.CMS.Core.8.0.0\lib\net45\EPiServer.Web.WebControls.dll</HintPath>
-    </Reference>
-    <Reference Include="EPiServer.WorkflowFoundation, Version=8.0.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\EPiServer.CMS.Core.8.0.0\lib\net45\EPiServer.WorkflowFoundation.dll</HintPath>
-    </Reference>
-    <Reference Include="EPiServer.XForms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\EPiServer.CMS.Core.8.0.0\lib\net45\EPiServer.XForms.dll</HintPath>
-    </Reference>
-    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+    <Reference Include="EPiServer.XForms, Version=9.0.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>packages\EPiServer.CMS.Core.9.0.3\lib\net45\EPiServer.XForms.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -138,9 +120,17 @@
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="StructureMap, Version=2.6.4.0, Culture=neutral, PublicKeyToken=e60ad81abae3c223, processorArchitecture=MSIL">
+    <Reference Include="StructureMap, Version=3.1.6.186, Culture=neutral, PublicKeyToken=e60ad81abae3c223, processorArchitecture=MSIL">
+      <HintPath>packages\structuremap-signed.3.1.6.186\lib\net40\StructureMap.dll</HintPath>
       <Private>True</Private>
-      <HintPath>packages\structuremap.2.6.4.1\lib\net40\StructureMap.dll</HintPath>
+    </Reference>
+    <Reference Include="StructureMap.Net4, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\structuremap-signed.3.1.6.186\lib\net40\StructureMap.Net4.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="StructureMap.Web, Version=1.0.0.0, Culture=neutral, PublicKeyToken=e60ad81abae3c223, processorArchitecture=MSIL">
+      <HintPath>packages\structuremap.web-signed.3.1.6.186\lib\net40\StructureMap.Web.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -183,7 +173,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="EPiServer.Libraries.snk" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
@@ -196,9 +188,9 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('packages\GitVersionTask.2.0.1\Build\GitVersionTask.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GitVersionTask.2.0.1\Build\GitVersionTask.targets'))" />
+    <Error Condition="!Exists('packages\GitVersionTask.3.1.2\Build\portable-net+sl+win+wpa+wp\GitVersionTask.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GitVersionTask.3.1.2\Build\portable-net+sl+win+wpa+wp\GitVersionTask.targets'))" />
   </Target>
-  <Import Project="packages\GitVersionTask.2.0.1\Build\GitVersionTask.targets" Condition="Exists('packages\GitVersionTask.2.0.1\Build\GitVersionTask.targets')" />
+  <Import Project="packages\GitVersionTask.3.1.2\Build\portable-net+sl+win+wpa+wp\GitVersionTask.targets" Condition="Exists('packages\GitVersionTask.3.1.2\Build\portable-net+sl+win+wpa+wp\GitVersionTask.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
