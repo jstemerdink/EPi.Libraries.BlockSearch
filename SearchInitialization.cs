@@ -64,6 +64,24 @@ namespace EPi.Libraries.BlockSearch
         /// <value>The content type respository.</value>
         protected Injected<IContentTypeRepository> ContentTypeRepository { get; set; }
 
+        /// <summary>
+        /// Gets or sets the content repository.
+        /// </summary>
+        /// <value>The content repository.</value>
+        protected Injected<IContentRepository> ContentRepository { get; set; }
+
+        /// <summary>
+        /// Gets or sets the content soft link repository.
+        /// </summary>
+        /// <value>The content soft link repository.</value>
+        protected Injected<ContentSoftLinkRepository> ContentSoftLinkRepository { get; set; }
+
+        /// <summary>
+        /// Gets or sets the content events.
+        /// </summary>
+        /// <value>The content events.</value>
+        protected Injected<IContentEvents> ContentEvents { get; set; }
+
         #endregion
 
         #region Public Methods and Operators
@@ -79,8 +97,8 @@ namespace EPi.Libraries.BlockSearch
         /// </remarks>
         public void Initialize(InitializationEngine context)
         {
-            DataFactory.Instance.PublishingContent += this.OnPublishingContent;
-            DataFactory.Instance.PublishedContent += this.OnPublishedContent;
+            this.ContentEvents.Service.PublishingContent += this.OnPublishingContent;
+            this.ContentEvents.Service.PublishedContent += this.OnPublishedContent;
 
             Logger.Information("[Blocksearch] Initialized.");
         }
@@ -105,22 +123,9 @@ namespace EPi.Libraries.BlockSearch
             {
                 return;
             }
-
-            // Get the softlink repository.
-            ContentSoftLinkRepository linkRepository;
-            try
-            {
-                linkRepository = ServiceLocator.Current.GetInstance<ContentSoftLinkRepository>();
-            }
-            catch (ActivationException activationException)
-            {
-                Logger.Error("[Blocksearch] ContentSoftLinkRepository not activated.", activationException);
-                return;
-            }
-
+            
             // Get the references to this block
-            List<ContentReference> referencingContentLinks =
-                linkRepository.Load(contentEventArgs.ContentLink, true)
+            List<ContentReference> referencingContentLinks = this.ContentSoftLinkRepository.Service.Load(contentEventArgs.ContentLink, true)
                     .Where(
                         link =>
                         link.SoftLinkType == ReferenceType.PageLinkReference
@@ -132,24 +137,27 @@ namespace EPi.Libraries.BlockSearch
             foreach (ContentReference referencingContentLink in referencingContentLinks)
             {
                 PageData parent;
-                DataFactory.Instance.TryGet(referencingContentLink, out parent);
+                this.ContentRepository.Service.TryGet(referencingContentLink, out parent);
 
-                // If it is not a standard page, do nothing
+                // If it is not pagedata, do nothing
                 if (parent == null)
                 {
+                    Logger.Information("[Blocksearch] Referencing content is not a page. Skipping update.");
                     continue;
                 }
 
                 // Check if the containing page is published.
-                if (parent.IsPendingPublish)
+                if (!parent.CheckPublishedStatus(PagePublishedStatus.Published))
                 {
+                    Logger.Information("[Blocksearch] page named '{0}' is not published. Skipping update.", parent.Name);
                     continue;
                 }
 
                 // Republish the containing page.
                 try
                 {
-                    DataFactory.Instance.Save(parent.CreateWritableClone(), SaveAction.Publish);
+                    this.ContentRepository.Service.Save(parent.CreateWritableClone(), SaveAction.Publish);
+                    Logger.Information("[Blocksearch] Updated containing page named '{0}'.", parent.Name);
                 }
                 catch (AccessDeniedException accessDeniedException)
                 {
@@ -215,14 +223,25 @@ namespace EPi.Libraries.BlockSearch
 
                 foreach (ContentAreaItem contentAreaItem in contentArea.Items)
                 {
-                    IContent blockData = contentAreaItem.GetContent();
-                    
+                    IContent content = contentAreaItem.GetContent();
+
                     //content area item can be null when duplicating a page
-                    if(blockData != null)
+                    if (content == null)
                     {
-                        IEnumerable<string> props = this.GetSearchablePropertyValues(blockData, blockData.ContentTypeID);
-                        stringBuilder.AppendFormat(" {0}", string.Join(" ", props));
-                    }                    
+                        continue;
+                    }
+
+                    // Check if the content is indeed a block, and not a page used in a content area
+                    BlockData blockData = content as BlockData;
+
+                    //content area item can be null when duplicating a page
+                    if (blockData == null)
+                    {
+                        continue;
+                    }
+
+                    IEnumerable<string> props = this.GetSearchablePropertyValues(content, content.ContentTypeID);
+                    stringBuilder.AppendFormat(" {0}", string.Join(" ", props));
                 }
             }
 
@@ -259,8 +278,8 @@ namespace EPi.Libraries.BlockSearch
         /// </remarks>
         public void Uninitialize(InitializationEngine context)
         {
-            DataFactory.Instance.PublishingContent -= this.OnPublishingContent;
-            DataFactory.Instance.PublishedContent -= this.OnPublishedContent;
+            this.ContentEvents.Service.PublishingContent -= this.OnPublishingContent;
+            this.ContentEvents.Service.PublishedContent -= this.OnPublishedContent;
 
             Logger.Information("[Blocksearch] Uninitialized.");
         }
