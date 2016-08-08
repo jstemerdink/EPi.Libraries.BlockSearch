@@ -1,11 +1,12 @@
 ﻿# Add block content to the index of EPiServer Search.
 [![Build status](https://ci.appveyor.com/api/projects/status/3qrrg548g02j8eej/branch/master?svg=true)](https://ci.appveyor.com/project/jstemerdink/epi-libraries-blocksearch/branch/master)
 [![GitHub version](https://badge.fury.io/gh/jstemerdink%2FEPi.Libraries.BlockSearch.svg)](http://badge.fury.io/gh/jstemerdink%2FEPi.Libraries.BlockSearch)
-[![Dependency Status](https://www.versioneye.com/user/projects/579c89baaa78d5003c1736bc/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/579c89baaa78d5003c1736bc)
 [![Platform](https://img.shields.io/badge/platform-.NET 4.5-blue.svg?style=flat)](https://msdn.microsoft.com/en-us/library/w0x726c2%28v=vs.110%29.aspx)
 [![Platform](https://img.shields.io/badge/EPiServer-%209.0.0-orange.svg?style=flat)](http://world.episerver.com/cms/)
 [![NuGet](https://img.shields.io/badge/NuGet-Release-blue.svg)](http://nuget.episerver.com/en/OtherPages/Package/?packageId=EPi.Libraries.BlockSearch)
-[![GitHub license](https://img.shields.io/badge/license-MIT%20license-blue.svg?style=flat)](license.txt)
+[![GitHub license](https://img.shields.io/badge/license-MIT%20license-blue.svg?style=flat)](license.txt)  
+[![Issue Count](https://codeclimate.com/github/jstemerdink/EPi.Libraries.BlockSearch/badges/issue_count.svg)](https://codeclimate.com/github/jstemerdink/EPi.Libraries.BlockSearch)
+[![Dependency Status](https://www.versioneye.com/user/projects/579c89baaa78d5003c1736bc/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/579c89baaa78d5003c1736bc)
 ## About
 Add Blocks used on a page to EPiServer Search Index as content of the page they were used on.
 This is supported in Find, but not if you use EPiServer Search.
