@@ -8,7 +8,7 @@
 [![GitHub license](https://img.shields.io/badge/license-MIT%20license-blue.svg?style=flat)](license.txt)  
 [![Issue Count](https://codeclimate.com/github/jstemerdink/EPi.Libraries.BlockSearch/badges/issue_count.svg)](https://codeclimate.com/github/jstemerdink/EPi.Libraries.BlockSearch)
 [![Dependency Status](https://www.versioneye.com/user/projects/579c89baaa78d5003c1736bc/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/579c89baaa78d5003c1736bc)
-[![Stories in Backlog](https://badge.waffle.io/jstemerdink/EPi.Libraries.BlockSearch.svg?label=backlog&title=Backlog)](http://waffle.io/jstemerdink/EPi.Libraries.BlockSearch)
+[![Stories in Backlog](https://badge.waffle.io/jstemerdink/EPi.Libraries.BlockSearch.svg?label=enhancement&title=Backlog)](http://waffle.io/jstemerdink/EPi.Libraries.BlockSearch)
 ## About
 Add Blocks used on a page to EPiServer Search Index as content of the page they were used on.
 This is supported in Find, but not if you use EPiServer Search.
