@@ -1,5 +1,5 @@
 ﻿// Copyright© 2015 Jeroen Stemerdink.
-// 
+//
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation
 // files (the "Software"), to deal in the Software without
@@ -8,10 +8,10 @@
 // copies of the Software, and to permit persons to whom the
 // Software is furnished to do so, subject to the following
 // conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
 // OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -43,6 +43,8 @@ using EPiServer.SpecializedProperties;
 
 namespace EPi.Libraries.BlockSearch
 {
+    using EPiServer.Security;
+
     /// <summary>
     ///     Class SearchInitialization.
     /// </summary>
@@ -123,7 +125,7 @@ namespace EPi.Libraries.BlockSearch
             {
                 return;
             }
-            
+
             // Get the references to this block
             List<ContentReference> referencingContentLinks = this.ContentSoftLinkRepository.Service.Load(contentEventArgs.ContentLink, true)
                     .Where(
@@ -156,7 +158,7 @@ namespace EPi.Libraries.BlockSearch
                 // Republish the containing page.
                 try
                 {
-                    this.ContentRepository.Service.Save(parent.CreateWritableClone(), SaveAction.Publish);
+                    this.ContentRepository.Service.Save(parent.CreateWritableClone(), SaveAction.Publish | SaveAction.ForceCurrentVersion, AccessLevel.NoAccess);
                     Logger.Information("[Blocksearch] Updated containing page named '{0}'.", parent.Name);
                 }
                 catch (AccessDeniedException accessDeniedException)
@@ -246,16 +248,25 @@ namespace EPi.Libraries.BlockSearch
                 }
             }
 
-            if (addtionalSearchContentProperty.PropertyType == typeof(string))
+            if (addtionalSearchContentProperty.PropertyType != typeof(string))
             {
-                try
-                {
-                    page[addtionalSearchContentProperty.Name] = TextIndexer.StripHtml(stringBuilder.ToString(), 0);
-                }
-                catch (EPiServerException ePiServerException)
-                {
-                    Logger.Error(string.Format(CultureInfo.InvariantCulture, "[Blocksearch] Property {0} dose not exist on {1} .", addtionalSearchContentProperty.Name, page.Name), ePiServerException);
-                }
+                return;
+            }
+
+            try
+            {
+                string additionalSearchContent = TextIndexer.StripHtml(stringBuilder.ToString(), 0);
+
+                // When being "delayed published" the pagedata is readonly. Create a writable clone to be safe.
+                PageData editablePage = page.CreateWritableClone();
+                editablePage[addtionalSearchContentProperty.Name] = additionalSearchContent;
+
+                // Save the writable pagedata, do not create a new version
+                this.ContentRepository.Service.Save(editablePage, SaveAction.Save | SaveAction.ForceCurrentVersion, AccessLevel.NoAccess);
+            }
+            catch (EPiServerException ePiServerException)
+            {
+                Logger.Error(string.Format(CultureInfo.InvariantCulture, "[Blocksearch] Property {0} dose not exist on {1} .", addtionalSearchContentProperty.Name, page.Name), ePiServerException);
             }
         }
 
