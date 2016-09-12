@@ -43,6 +43,7 @@ using EPiServer.SpecializedProperties;
 
 namespace EPi.Libraries.BlockSearch
 {
+    using EPiServer.Data.Entity;
     using EPiServer.Security;
 
     /// <summary>
@@ -225,7 +226,11 @@ namespace EPi.Libraries.BlockSearch
 
                 foreach (ContentAreaItem contentAreaItem in contentArea.Items)
                 {
-                    IContent content = contentAreaItem.GetContent();
+                    IContent content;
+                    if (!this.ContentRepository.Service.TryGet(contentAreaItem.ContentLink, out content))
+                    {
+                        continue;
+                    }
 
                     //content area item can be null when duplicating a page
                     if (content == null)
