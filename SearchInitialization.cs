@@ -1,5 +1,4 @@
-﻿// Copyright© 2015 Jeroen Stemerdink.
-//
+﻿// Copyright © 2016 Jeroen Stemerdink.
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation
 // files (the "Software"), to deal in the Software without
@@ -8,10 +7,8 @@
 // copies of the Software, and to permit persons to whom the
 // Software is furnished to do so, subject to the following
 // conditions:
-//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
 // OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -20,31 +17,28 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
-
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-
-using EPi.Libraries.BlockSearch.DataAnnotations;
-
-using EPiServer;
-using EPiServer.Core;
-using EPiServer.Core.Html;
-using EPiServer.DataAbstraction;
-using EPiServer.DataAccess;
-using EPiServer.Framework;
-using EPiServer.Framework.Initialization;
-using EPiServer.Logging;
-using EPiServer.ServiceLocation;
-using EPiServer.SpecializedProperties;
-
 namespace EPi.Libraries.BlockSearch
 {
-    using EPiServer.Data.Entity;
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+    using System.Reflection;
+    using System.Text;
+
+    using EPi.Libraries.BlockSearch.DataAnnotations;
+
+    using EPiServer;
+    using EPiServer.Core;
+    using EPiServer.Core.Html;
+    using EPiServer.DataAbstraction;
+    using EPiServer.DataAccess;
+    using EPiServer.Framework;
+    using EPiServer.Framework.Initialization;
+    using EPiServer.Logging;
     using EPiServer.Security;
+    using EPiServer.ServiceLocation;
+    using EPiServer.SpecializedProperties;
 
     /// <summary>
     ///     Class SearchInitialization.
@@ -53,19 +47,13 @@ namespace EPi.Libraries.BlockSearch
     [ModuleDependency(typeof(FrameworkInitialization))]
     public class SearchInitialization : IInitializableModule
     {
-        #region Static Fields
-
         private static readonly ILogger Logger = LogManager.GetLogger(typeof(SearchInitialization));
 
-        #endregion
-
-        #region Properties
-
         /// <summary>
-        ///     Gets or sets the content type respository.
+        /// Gets or sets the content events.
         /// </summary>
-        /// <value>The content type respository.</value>
-        protected Injected<IContentTypeRepository> ContentTypeRepository { get; set; }
+        /// <value>The content events.</value>
+        protected Injected<IContentEvents> ContentEvents { get; set; }
 
         /// <summary>
         /// Gets or sets the content repository.
@@ -77,17 +65,13 @@ namespace EPi.Libraries.BlockSearch
         /// Gets or sets the content soft link repository.
         /// </summary>
         /// <value>The content soft link repository.</value>
-        protected Injected<ContentSoftLinkRepository> ContentSoftLinkRepository { get; set; }
+        protected Injected<IContentSoftLinkRepository> ContentSoftLinkRepository { get; set; }
 
         /// <summary>
-        /// Gets or sets the content events.
+        ///     Gets or sets the content type respository.
         /// </summary>
-        /// <value>The content events.</value>
-        protected Injected<IContentEvents> ContentEvents { get; set; }
-
-        #endregion
-
-        #region Public Methods and Operators
+        /// <value>The content type respository.</value>
+        protected Injected<IContentTypeRepository> ContentTypeRepository { get; set; }
 
         /// <summary>
         ///     Initializes this instance.
@@ -128,10 +112,11 @@ namespace EPi.Libraries.BlockSearch
             }
 
             // Get the references to this block
-            List<ContentReference> referencingContentLinks = this.ContentSoftLinkRepository.Service.Load(contentEventArgs.ContentLink, true)
+            List<ContentReference> referencingContentLinks =
+                this.ContentSoftLinkRepository.Service.Load(contentEventArgs.ContentLink, true)
                     .Where(
                         link =>
-                        link.SoftLinkType == ReferenceType.PageLinkReference
+                        (link.SoftLinkType == ReferenceType.PageLinkReference)
                         && !ContentReference.IsNullOrEmpty(link.OwnerContentLink))
                     .Select(link => link.OwnerContentLink)
                     .ToList();
@@ -159,7 +144,10 @@ namespace EPi.Libraries.BlockSearch
                 // Republish the containing page.
                 try
                 {
-                    this.ContentRepository.Service.Save(parent.CreateWritableClone(), SaveAction.Publish | SaveAction.ForceCurrentVersion, AccessLevel.NoAccess);
+                    this.ContentRepository.Service.Save(
+                        parent.CreateWritableClone(),
+                        SaveAction.Publish | SaveAction.ForceCurrentVersion,
+                        AccessLevel.NoAccess);
                     Logger.Information("[Blocksearch] Updated containing page named '{0}'.", parent.Name);
                 }
                 catch (AccessDeniedException accessDeniedException)
@@ -213,7 +201,6 @@ namespace EPi.Libraries.BlockSearch
                 from d in contentType.PropertyDefinitions
                 where typeof(PropertyContentArea).IsAssignableFrom(d.Type.DefinitionType)
                 select d)
-
             {
                 PropertyData propertyData = page.Property[current.Name];
 
@@ -232,7 +219,7 @@ namespace EPi.Libraries.BlockSearch
                         continue;
                     }
 
-                    //content area item can be null when duplicating a page
+                    // content area item can be null when duplicating a page
                     if (content == null)
                     {
                         continue;
@@ -241,10 +228,12 @@ namespace EPi.Libraries.BlockSearch
                     // Check if the content is indeed a block, and not a page used in a content area
                     BlockData blockData = content as BlockData;
 
-                    //Content area is not a block, but probably a page used as a teaser.
+                    // Content area is not a block, but probably a page used as a teaser.
                     if (blockData == null)
                     {
-                        Logger.Information("[Blocksearch] Contentarea item is not block data. Skipping update.", content.Name);
+                        Logger.Information(
+                            "[Blocksearch] Contentarea item is not block data. Skipping update.",
+                            content.Name);
                         continue;
                     }
 
@@ -267,11 +256,20 @@ namespace EPi.Libraries.BlockSearch
                 editablePage[addtionalSearchContentProperty.Name] = additionalSearchContent;
 
                 // Save the writable pagedata, do not create a new version
-                this.ContentRepository.Service.Save(editablePage, SaveAction.Save | SaveAction.ForceCurrentVersion, AccessLevel.NoAccess);
+                this.ContentRepository.Service.Save(
+                    editablePage,
+                    SaveAction.Save | SaveAction.ForceCurrentVersion,
+                    AccessLevel.NoAccess);
             }
             catch (EPiServerException ePiServerException)
             {
-                Logger.Error(string.Format(CultureInfo.InvariantCulture, "[Blocksearch] Property {0} dose not exist on {1} .", addtionalSearchContentProperty.Name, page.Name), ePiServerException);
+                Logger.Error(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "[Blocksearch] Property {0} dose not exist on {1} .",
+                        addtionalSearchContentProperty.Name,
+                        page.Name),
+                    ePiServerException);
             }
         }
 
@@ -300,10 +298,6 @@ namespace EPi.Libraries.BlockSearch
 
             Logger.Information("[Blocksearch] Uninitialized.");
         }
-
-        #endregion
-
-        #region Methods
 
         /// <summary>
         ///     Gets the name of the key word property.
@@ -387,7 +381,5 @@ namespace EPi.Libraries.BlockSearch
         {
             return this.GetSearchablePropertyValues(contentData, this.ContentTypeRepository.Service.Load(contentTypeID));
         }
-
-        #endregion
     }
 }
