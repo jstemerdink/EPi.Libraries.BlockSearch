@@ -7,6 +7,7 @@ environment:
 install:
 - choco install gitversion.portable -pre -y
 - cmd: nuget sources add -Name EPiServerFeed -Source http://nuget.episerver.com/feed/packages.svc/
+- cmd: nuget sources add -Name EPiServerBetaFeed -Source https://www.myget.org/F/cmscore/api/v2
 before_build:
 - cmd: nuget restore
 - ps: gitversion /l console /output buildserver /updateAssemblyInfo
@@ -31,11 +32,11 @@ deploy:
   skip_symbols: true
   artifact: /.*\.nupkg/
   on:
-    branch: development             # release from develop branch only    
+    branch: development         # release from develop branch only
 - provider: GitHub
   auth_token:
     secure: TaDEavUfTj6EgwcO7y5njQVS5Z9bBU/fVFuSApo5XEO6FSBT5UzJQmyJjbhIFDZb
   artifact: /.*\.zip/
   on:
     branch: master              # release from master branch only
-    appveyor_repo_tag: true     # deploy on tag push only
+    #appveyor_repo_tag: true    # deploy on tag push only

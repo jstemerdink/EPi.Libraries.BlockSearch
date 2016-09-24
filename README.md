@@ -3,7 +3,7 @@
 [![GitHub version](https://badge.fury.io/gh/jstemerdink%2FEPi.Libraries.BlockSearch.svg)](http://badge.fury.io/gh/jstemerdink%2FEPi.Libraries.BlockSearch)
 [![Semver](http://img.shields.io/SemVer/2.0.0.png)](http://semver.org/spec/v2.0.0.html)
 [![Platform](https://img.shields.io/badge/platform-.NET 4.5-blue.svg?style=flat)](https://msdn.microsoft.com/en-us/library/w0x726c2%28v=vs.110%29.aspx)
-[![Platform](https://img.shields.io/badge/EPiServer-%209.0.3-orange.svg?style=flat)](http://world.episerver.com/cms/)
+[![Platform](https://img.shields.io/badge/EPiServer-%2010.0.0-orange.svg?style=flat)](http://world.episerver.com/cms/)
 [![NuGet](https://img.shields.io/badge/NuGet-Release-blue.svg)](http://nuget.episerver.com/en/OtherPages/Package/?packageId=EPi.Libraries.BlockSearch)
 [![GitHub license](https://img.shields.io/badge/license-MIT%20license-blue.svg?style=flat)](license.txt)  
 [![Issue Count](https://codeclimate.com/github/jstemerdink/EPi.Libraries.BlockSearch/badges/issue_count.svg)](https://codeclimate.com/github/jstemerdink/EPi.Libraries.BlockSearch)
@@ -22,12 +22,7 @@ Note the ScaffoldColumn(false) attribute, which hides it in edit mode.
 The aggregated content from string properties marked ```Searchable``` in the Blocks are added to the property marked with ```[AdditionalSearchContent]```.
 Note: If for some reason you don't want a property on a Block indexed, just add ```[Seachable(false)]``` to it.
 The content of the property marked with ```[AdditionalSearchContent]`` is added to the index and you get results also if the term you are looking for is only used in a Block on the page.
-## Requirements
-* EPiServer >= 9.0.3
-* .Net 4.5
-## Deploy
-* Compile the project.
-* Drop the dll in the bin.
+
 
 > *Powered by ReSharper*
 > [![image](http://resources.jetbrains.com/assets/media/open-graph/jetbrains_250x250.png)](http://jetbrains.com)
