@@ -258,7 +258,7 @@ namespace EPi.Libraries.BlockSearch
                 // Save the writable pagedata, do not create a new version
                 this.ContentRepository.Service.Save(
                     editablePage,
-                    SaveAction.Save | SaveAction.ForceCurrentVersion,
+                    SaveAction.Save,
                     AccessLevel.NoAccess);
             }
             catch (EPiServerException ePiServerException)
