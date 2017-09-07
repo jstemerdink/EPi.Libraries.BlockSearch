@@ -84,8 +84,8 @@ namespace EPi.Libraries.BlockSearch
         /// </remarks>
         public void Initialize(InitializationEngine context)
         {
-            this.ContentEvents.Service.PublishingContent += this.OnPublishingContent;
             this.ContentEvents.Service.PublishedContent += this.OnPublishedContent;
+            this.ContentEvents.Service.CheckedOutContent += this.OnCheckedOutContent;
 
             Logger.Information("[Blocksearch] Initialized.");
         }
@@ -146,7 +146,7 @@ namespace EPi.Libraries.BlockSearch
                 {
                     this.ContentRepository.Service.Save(
                         parent.CreateWritableClone(),
-                        SaveAction.Publish | SaveAction.ForceCurrentVersion,
+                        SaveAction.CheckOut,
                         AccessLevel.NoAccess);
                     Logger.Information("[Blocksearch] Updated containing page named '{0}'.", parent.Name);
                 }
@@ -162,12 +162,10 @@ namespace EPi.Libraries.BlockSearch
             }
         }
 
-        /// <summary>
-        ///     Raises the page event.
-        /// </summary>
+        /// <summary> Handles the <see cref="E:CheckedOutContent" /> event. </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="contentEventArgs">Event information to send to registered event handlers.</param>
-        public void OnPublishingContent(object sender, ContentEventArgs contentEventArgs)
+        /// <param name="contentEventArgs">The <see cref="ContentEventArgs"/> instance containing the event data.</param>
+        public void OnCheckedOutContent(object sender, ContentEventArgs contentEventArgs)
         {
             if (contentEventArgs == null)
             {
@@ -255,10 +253,9 @@ namespace EPi.Libraries.BlockSearch
                 PageData editablePage = page.CreateWritableClone();
                 editablePage[addtionalSearchContentProperty.Name] = additionalSearchContent;
 
-                // Save the writable pagedata, do not create a new version
                 this.ContentRepository.Service.Save(
                     editablePage,
-                    SaveAction.Save,
+                    SaveAction.Publish | SaveAction.ForceCurrentVersion,
                     AccessLevel.NoAccess);
             }
             catch (EPiServerException ePiServerException)
@@ -293,7 +290,7 @@ namespace EPi.Libraries.BlockSearch
         /// </remarks>
         public void Uninitialize(InitializationEngine context)
         {
-            this.ContentEvents.Service.PublishingContent -= this.OnPublishingContent;
+            this.ContentEvents.Service.CheckedOutContent -= this.OnCheckedOutContent;
             this.ContentEvents.Service.PublishedContent -= this.OnPublishedContent;
 
             Logger.Information("[Blocksearch] Uninitialized.");
@@ -303,7 +300,7 @@ namespace EPi.Libraries.BlockSearch
         ///     Gets the name of the key word property.
         /// </summary>
         /// <param name="page">The page.</param>
-        /// <returns>System.String.</returns>
+        /// <returns>The propertyinfo.</returns>
         private static PropertyInfo GetAddtionalSearchContentProperty(PageData page)
         {
             PropertyInfo keywordsMetatagProperty =
