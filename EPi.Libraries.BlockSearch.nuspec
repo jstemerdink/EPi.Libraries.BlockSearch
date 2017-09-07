@@ -10,11 +10,11 @@
     <iconUrl>http://jstemerdink.net/images/js-nuget.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Updated to work with EPiServer 10.</releaseNotes>
-    <copyright>Copyright © Jeroen Stemerdink 2016</copyright>
+    <releaseNotes>Fixed an issue (#4) that an exception was thrown when publishing a block.</releaseNotes>
+    <copyright>Copyright © Jeroen Stemerdink 2017</copyright>
     <tags>search blocks</tags>
     <dependencies>
-      <dependency id="EPiServer.CMS.Core" version="10.0.0" />
+      <dependency id="EPiServer.CMS.Core" version="10.0.1" />
     </dependencies>
   </metadata>
   <files>
