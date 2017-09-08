@@ -34,7 +34,7 @@ deploy:
   skip_symbols: true
   artifact: /.*\.nupkg/
   on:
-    branch: development         # release from develop branch only
+    branch: develop         # release from develop branch only
 - provider: GitHub
   auth_token:
     secure: TaDEavUfTj6EgwcO7y5njQVS5Z9bBU/fVFuSApo5XEO6FSBT5UzJQmyJjbhIFDZb
