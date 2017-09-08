@@ -13,7 +13,7 @@ before_build:
 - cmd: nuget restore
 - ps: gitversion /l console /output buildserver /updateAssemblyInfo
 build_script:
-  - MSBuild.SonarQube.Runner.exe begin /k:"jstemerdink:EPi.Libraries.BlockSearchr" /n:"EPi.Libraries.BlockSearch" /d:"sonar.host.url=https://sonarcloud.io" /d:"sonar.organization=jstemerdink-github" /d:"sonar.login=0b0eec6902ab7d776899f79bfeff15d313dd6e09"
+  - MSBuild.SonarQube.Runner.exe begin /k:"jstemerdink:EPi.Libraries.BlockSearch" /n:"EPi.Libraries.BlockSearch" /d:"sonar.host.url=https://sonarcloud.io" /d:"sonar.organization=jstemerdink-github" /d:"sonar.login=0b0eec6902ab7d776899f79bfeff15d313dd6e09"
   - msbuild "EPi.Libraries.BlockSearch.sln"
   - MSBuild.SonarQube.Runner.exe end /d:"sonar.login=0b0eec6902ab7d776899f79bfeff15d313dd6e09"
 after_build:

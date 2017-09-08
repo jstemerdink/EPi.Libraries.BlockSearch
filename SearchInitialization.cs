@@ -89,6 +89,11 @@ namespace EPi.Libraries.BlockSearch
         /// <exception cref="ActivationException">if there is are errors resolving the service instance.</exception>
         public void Initialize(InitializationEngine context)
         {
+            if (context == null)
+            {
+                return;
+            }
+
             this.Logger = context.Locate.Advanced.GetInstance<ILogger>();
             this.ContentEvents = context.Locate.Advanced.GetInstance<IContentEvents>();
             this.ContentTypeRepository = context.Locate.Advanced.GetInstance<IContentTypeRepository>();
@@ -229,35 +234,7 @@ namespace EPi.Libraries.BlockSearch
                     continue;
                 }
 
-                foreach (ContentAreaItem contentAreaItem in contentArea.Items)
-                {
-                    IContent content;
-                    if (!this.ContentRepository.TryGet(contentAreaItem.ContentLink, out content))
-                    {
-                        continue;
-                    }
-
-                    // content area item can be null when duplicating a page
-                    if (content == null)
-                    {
-                        continue;
-                    }
-
-                    // Check if the content is indeed a block, and not a page used in a content area
-                    BlockData blockData = content as BlockData;
-
-                    // Content area is not a block, but probably a page used as a teaser.
-                    if (blockData == null)
-                    {
-                        this.Logger.Information(
-                            "[Blocksearch] Contentarea item is not block data. Skipping update.",
-                            content.Name);
-                        continue;
-                    }
-
-                    IEnumerable<string> props = this.GetSearchablePropertyValues(content, content.ContentTypeID);
-                    stringBuilder.AppendFormat(" {0}", string.Join(" ", props));
-                }
+                stringBuilder.Append(this.GetAdditionalContent(contentArea));
             }
 
             if (addtionalSearchContentProperty.PropertyType != typeof(string))
@@ -298,24 +275,67 @@ namespace EPi.Libraries.BlockSearch
         private PropertyInfo GetAddtionalSearchContentProperty(PageData page)
         {
             PropertyInfo keywordsMetatagProperty =
-                page.GetType().GetProperties().Where(this.HasAttribute<AdditionalSearchContentAttribute>).FirstOrDefault();
+                page.GetType().GetProperties().FirstOrDefault(this.HasAttribute<AdditionalSearchContentAttribute>);
 
             return keywordsMetatagProperty;
+        }
+
+
+        /// <summary>
+        /// Gets the additional search content from the <paramref name="contentArea"/>.
+        /// </summary>
+        /// <param name="contentArea">The content area.</param>
+        /// <returns>The additional search content.</returns>
+        private string GetAdditionalContent(ContentArea contentArea)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            foreach (ContentAreaItem contentAreaItem in contentArea.Items)
+            {
+                IContent content;
+                if (!this.ContentRepository.TryGet(contentAreaItem.ContentLink, out content))
+                {
+                    continue;
+                }
+
+                // content area item can be null when duplicating a page
+                if (content == null)
+                {
+                    continue;
+                }
+
+                // Check if the content is indeed a block, and not a page used in a content area
+                BlockData blockData = content as BlockData;
+
+                // Content area is not a block, but probably a page used as a teaser.
+                if (blockData == null)
+                {
+                    this.Logger.Information(
+                        "[Blocksearch] Contentarea item is not block data. Skipping update.",
+                        content.Name);
+                    continue;
+                }
+
+                IEnumerable<string> props = this.GetSearchablePropertyValues(content, content.ContentTypeID);
+                stringBuilder.AppendFormat(" {0}", string.Join(" ", props));
+            }
+
+            return stringBuilder.ToString();
         }
 
         /// <summary>
         ///     Determines whether the specified self has attribute.
         /// </summary>
         /// <typeparam name="T">The type of the attribute.</typeparam>
-        /// <param name="propertyInfo">The propertyInfo.</param>
+        /// <param name="memberInfo">The memberInfo.</param>
         /// <returns><c>true</c> if the specified self has attribute; otherwise, <c>false</c>.</returns>
-        private bool HasAttribute<T>(PropertyInfo propertyInfo) where T : Attribute
+        private bool HasAttribute<T>(MemberInfo memberInfo) where T : Attribute
         {
             T attr = default(T);
 
             try
             {
-                attr = (T)Attribute.GetCustomAttribute(propertyInfo, typeof(T));
+                attr = (T)Attribute.GetCustomAttribute(memberInfo, typeof(T));
             }
             catch (Exception exception)
             {
