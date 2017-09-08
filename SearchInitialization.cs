@@ -50,7 +50,7 @@ namespace EPi.Libraries.BlockSearch
         /// <summary>
         /// The parent update triggered
         /// </summary>
-        private bool parentUpdateTriggered;
+        private int parentId;
 
         /// <summary>
         /// Gets or sets the logger
@@ -123,6 +123,9 @@ namespace EPi.Libraries.BlockSearch
                 return;
             }
 
+            // Reset the pageId currently updating.
+            this.parentId = 0;
+
             // Check if the content that is published is indeed a block.
             BlockData blockData = contentEventArgs.Content as BlockData;
 
@@ -156,8 +159,8 @@ namespace EPi.Libraries.BlockSearch
                 return;
             }
 
-            // If a SaveAction.ForceCurrentVersion is triggered on the page itself, publishing content is triggered only once. When initiated from somewhere else, it goed into an endless loop.
-            if (this.parentUpdateTriggered)
+            // If a SaveAction.ForceCurrentVersion is triggered it goes into an endless loop.
+            if (this.parentId != 0 && this.parentId == contentEventArgs.ContentLink.ID)
             {
                 return;
             }
@@ -299,7 +302,8 @@ namespace EPi.Libraries.BlockSearch
                 PageData editablePage = parent.CreateWritableClone();
                 editablePage[index: addtionalSearchContentProperty.Name] = additionalSearchContent;
 
-                this.parentUpdateTriggered = true;
+                // Set the pageId currently updating
+                this.parentId = parent.ContentLink.ID;
 
                 this.ContentRepository.Save(
                     content: editablePage,
