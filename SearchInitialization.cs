@@ -48,11 +48,6 @@ namespace EPi.Libraries.BlockSearch
     public class SearchInitialization : IInitializableModule
     {
         /// <summary>
-        /// The parent update triggered
-        /// </summary>
-        private int parentId;
-
-        /// <summary>
         /// Gets or sets the logger
         /// </summary>
         /// <value>The logger.</value>
@@ -123,9 +118,6 @@ namespace EPi.Libraries.BlockSearch
                 return;
             }
 
-            // Reset the pageId currently updating.
-            this.parentId = 0;
-
             // Check if the content that is published is indeed a block.
             BlockData blockData = contentEventArgs.Content as BlockData;
 
@@ -159,11 +151,12 @@ namespace EPi.Libraries.BlockSearch
                 return;
             }
 
-            // If a SaveAction.ForceCurrentVersion is triggered it goes into an endless loop.
-            if (this.parentId != 0 && this.parentId == contentEventArgs.ContentLink.ID)
+            if (pageData.IsReadOnly)
             {
-                return;
+                pageData = pageData.CreateWritableClone();
+                contentEventArgs.Content = pageData;
             }
+
 
             this.UpdateAdditionalSearchContent(parent: pageData);
         }
@@ -298,17 +291,7 @@ namespace EPi.Libraries.BlockSearch
             {
                 string additionalSearchContent = TextIndexer.StripHtml(stringBuilder.ToString(), 0);
 
-                // When being "delayed published" the pagedata is readonly. Create a writable clone to be safe.
-                PageData editablePage = parent.CreateWritableClone();
-                editablePage[index: addtionalSearchContentProperty.Name] = additionalSearchContent;
-
-                // Set the pageId currently updating
-                this.parentId = parent.ContentLink.ID;
-
-                this.ContentRepository.Save(
-                    content: editablePage,
-                    action: SaveAction.ForceCurrentVersion,
-                    access: AccessLevel.NoAccess);
+                parent[index: addtionalSearchContentProperty.Name] = additionalSearchContent;
             }
             catch (EPiServerException epiServerException)
             {
