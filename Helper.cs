@@ -254,7 +254,7 @@ namespace EPi.Libraries.BlockSearch
                 IEnumerable<string> props = this.GetSearchablePropertyValues(
                     contentData: content,
                     contentTypeId: content.ContentTypeID);
-                stringBuilder.AppendFormat(" {0}", string.Join(" ", values: props));
+                stringBuilder.AppendFormat(CultureInfo.InvariantCulture, " {0}", string.Join(" ", values: props));
             }
 
             return stringBuilder.ToString();

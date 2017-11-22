@@ -4,17 +4,18 @@
     <id>$id$</id>
     <version>$version$</version>
     <title>$title$</title>
-    <authors>$author$</authors>
-    <owners>$author$</owners>
+    <authors>Jeroen Stemerdink</authors>
+    <owners>Jeroen Stemerdink</owners>
     <projectUrl>https://github.com/jstemerdink/EPi.Libraries.BlockSearch/</projectUrl>
     <iconUrl>http://jstemerdink.net/images/js-nuget.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>$description$</description>
-    <releaseNotes>Fixed an issue (#4) that an exception was thrown when publishing a block.</releaseNotes>
+    <description>Library to enable indexing of blocks on a page.</description>
+    <releaseNotes>Update for Episerver CMS 11.</releaseNotes>
     <copyright>Copyright © Jeroen Stemerdink 2017</copyright>
     <tags>search blocks</tags>
     <dependencies>
-      <dependency id="EPiServer.CMS.Core" version="10.0.1" />
+      <dependency id="EPiServer.CMS.Core" version="11.1.0" />
+      <dependency id="EPiServer.CMS.AspNet" version="11.1.0" />
     </dependencies>
   </metadata>
   <files>
