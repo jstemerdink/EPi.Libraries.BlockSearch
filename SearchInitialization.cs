@@ -68,7 +68,7 @@ namespace EPi.Libraries.BlockSearch
                 return;
             }
 
-			this.Logger = LogManager.GetLogger();
+            this.Logger = LogManager.GetLogger();
             this.ContentEvents = context.Locate.Advanced.GetInstance<IContentEvents>();
             
             this.Helper = new Helper(serviceLocator: context.Locate.Advanced);

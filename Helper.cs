@@ -74,7 +74,7 @@ namespace EPi.Libraries.BlockSearch
             this.ContentRepository = serviceLocator.GetInstance<IContentRepository>();
             this.ContentSoftLinkRepository = serviceLocator.GetInstance<IContentSoftLinkRepository>();
             this.ContentTypeRepository = serviceLocator.GetInstance<IContentTypeRepository>();
-			this.Logger = LogManager.GetLogger();
+            this.Logger = LogManager.GetLogger();
         }
 
         /// <summary>
