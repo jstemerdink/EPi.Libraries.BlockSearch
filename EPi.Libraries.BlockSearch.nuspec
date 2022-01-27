@@ -7,15 +7,15 @@
     <authors>Jeroen Stemerdink</authors>
     <owners>Jeroen Stemerdink</owners>
     <projectUrl>https://github.com/jstemerdink/EPi.Libraries.BlockSearch/</projectUrl>
-    <iconUrl>http://jstemerdink.net/images/js-nuget.png</iconUrl>
+    <iconUrl>https://jstemerdink.files.wordpress.com/2020/02/js-nuget.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Library to enable indexing of blocks on a page.</description>
-    <releaseNotes>Update for Episerver CMS 11.</releaseNotes>
-    <copyright>Copyright © Jeroen Stemerdink 2017</copyright>
+    <releaseNotes>Update for Episerver CMS 12.</releaseNotes>
+    <copyright>Copyright © Jeroen Stemerdink 2022</copyright>
     <tags>search blocks</tags>
     <dependencies>
-      <dependency id="EPiServer.CMS.Core" version="11.1.0" />
-      <dependency id="EPiServer.CMS.AspNet" version="11.1.0" />
+      <dependency id="EPiServer.CMS.Core" version="12.0.3" />
+      <dependency id="EPiServer.CMS.AspNetCore" version="12.0.3" />
     </dependencies>
   </metadata>
   <files>

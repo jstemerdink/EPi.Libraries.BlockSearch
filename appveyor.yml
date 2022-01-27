@@ -19,7 +19,7 @@ build_script:
 after_build:
 - cmd: nuget pack EPi.Libraries.BlockSearch.csproj -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
 - cmd: appveyor PushArtifact "EPi.Libraries.BlockSearch.%GitVersion_NuGetVersion%.nupkg"
-- 7z a EPi.Libraries.BlockSearch.%GitVersion_NuGetVersion%.zip %APPVEYOR_BUILD_FOLDER%\bin\Release\EPi.Libraries.BlockSearch.dll
+- 7z a EPi.Libraries.BlockSearch.%GitVersion_NuGetVersion%.zip %APPVEYOR_BUILD_FOLDER%\bin\Release\net5.0\EPi.Libraries.BlockSearch.dll
 - cmd: appveyor PushArtifact "EPi.Libraries.BlockSearch.%GitVersion_NuGetVersion%.zip"
 before_package:
 - ps: >-

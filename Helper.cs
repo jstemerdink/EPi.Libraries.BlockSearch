@@ -44,44 +44,40 @@ namespace EPi.Libraries.BlockSearch
     public class Helper
     {
         /// <summary>
+        /// Gets the logger
+        /// </summary>
+        /// <value>The logger.</value>
+        private readonly ILogger logger = LogManager.GetLogger();
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Helper"/> class.
         /// </summary>
         /// <param name="contentRepository">The content repository.</param>
         /// <param name="contentSoftLinkRepository">The content soft link repository.</param>
         /// <param name="contentTypeRepository">The content type repository.</param>
-        /// <param name="logger">The logger.</param>
-        public Helper(IContentRepository contentRepository, IContentSoftLinkRepository contentSoftLinkRepository, IContentTypeRepository contentTypeRepository, ILogger logger)
+        public Helper(IContentRepository contentRepository, IContentSoftLinkRepository contentSoftLinkRepository, IContentTypeRepository contentTypeRepository)
         {
             this.ContentRepository = contentRepository;
             this.ContentSoftLinkRepository = contentSoftLinkRepository;
             this.ContentTypeRepository = contentTypeRepository;
-            this.Logger = logger;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Helper" /> class.
         /// </summary>
-        /// <param name="serviceLocator">The service locator.</param>
-        /// <exception cref="ActivationException">if there is are errors resolving  the service instance.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="serviceLocator"/> is <see langword="null"/></exception>
-        public Helper(IServiceLocator serviceLocator)
+        /// <param name="serviceProvider">The service locator.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="serviceProvider"/> is <see langword="null"/></exception>
+        public Helper(IServiceProvider serviceProvider)
         {
-            if (serviceLocator == null)
+            if (serviceProvider == null)
             {
-                throw new ArgumentNullException(nameof(serviceLocator));
+                throw new ArgumentNullException(nameof(serviceProvider));
             }
 
-            this.ContentRepository = serviceLocator.GetInstance<IContentRepository>();
-            this.ContentSoftLinkRepository = serviceLocator.GetInstance<IContentSoftLinkRepository>();
-            this.ContentTypeRepository = serviceLocator.GetInstance<IContentTypeRepository>();
-            this.Logger = LogManager.GetLogger();
+            this.ContentRepository = serviceProvider.GetInstance<IContentRepository>();
+            this.ContentSoftLinkRepository = serviceProvider.GetInstance<IContentSoftLinkRepository>();
+            this.ContentTypeRepository = serviceProvider.GetInstance<IContentTypeRepository>();
         }
-
-        /// <summary>
-        /// Gets the logger
-        /// </summary>
-        /// <value>The logger.</value>
-        private ILogger Logger { get; }
 
         /// <summary>
         /// Gets the content repository.
@@ -124,14 +120,14 @@ namespace EPi.Libraries.BlockSearch
                 // If it is not pagedata, do nothing
                 if (parent == null)
                 {
-                    this.Logger.Information("[Blocksearch] Referencing content is not a page. Skipping update.");
+                    this.logger.Information("[Blocksearch] Referencing content is not a page. Skipping update.");
                     continue;
                 }
 
                 // Check if the containing page is published.
                 if (!parent.CheckPublishedStatus(status: PagePublishedStatus.Published))
                 {
-                    this.Logger.Information("[Blocksearch] page named '{0}' is not published. Skipping update.", parent.Name);
+                    this.logger.Information("[Blocksearch] page named '{0}' is not published. Skipping update.", parent.Name);
                     continue;
                 }
 
@@ -145,7 +141,7 @@ namespace EPi.Libraries.BlockSearch
                 }
                 catch (AccessDeniedException accessDeniedException)
                 {
-                    this.Logger.Error(
+                    this.logger.Error(
                         string.Format(
                             CultureInfo.InvariantCulture,
                             "[Blocksearch] Not enough accessrights to republish containing pagetype named '{0}'.",
@@ -207,7 +203,7 @@ namespace EPi.Libraries.BlockSearch
             }
             catch (EPiServerException epiServerException)
             {
-                this.Logger.Error(
+                this.logger.Error(
                     string.Format(
                         CultureInfo.InvariantCulture,
                         "[Blocksearch] Property {0} does not exist on {1}.",
@@ -245,7 +241,7 @@ namespace EPi.Libraries.BlockSearch
                 // Content area is not a block, but probably a page used as a teaser.
                 if (blockData == null)
                 {
-                    this.Logger.Information(
+                    this.logger.Information(
                         "[Blocksearch] Contentarea item is not block data. Skipping update.",
                         content.Name);
                     continue;
@@ -342,7 +338,7 @@ namespace EPi.Libraries.BlockSearch
             }
             catch (Exception exception)
             {
-                this.Logger.Error("[Blocksearch] Error getting custom attribute.", exception: exception);
+                this.logger.Error("[Blocksearch] Error getting custom attribute.", exception: exception);
             }
 
             return attr != null;
