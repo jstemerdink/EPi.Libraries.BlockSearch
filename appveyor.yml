@@ -1,5 +1,4 @@
 version: 1.0.{build}
-#image: Visual Studio 2013
 image: Visual Studio 2022
 configuration: Release
 environment:
@@ -13,18 +12,15 @@ init:
 
 install:
 - choco install gitversion.portable -pre -y
-- choco install "sonarscanner-msbuild-net50" -y
 - cmd: nuget sources add -Name EPiServerFeed -Source http://nuget.episerver.com/feed/packages.svc/
 before_build:
 - cmd: nuget restore
 - ps: gitversion /l console /output buildserver /updateAssemblyInfo
 build_script:
-  #- dotnet C:\ProgramData\chocolatey\lib\sonarscanner-msbuild-net5\tools\SonarScanner.MSBuild.dll begin /k:"jstemerdink:EPi.Libraries.BlockSearch" /n:"EPi.Libraries.BlockSearch" /d:"sonar.host.url=https://sonarcloud.io" /d:"sonar.organization=jstemerdink-github" /d:"sonar.login=0b0eec6902ab7d776899f79bfeff15d313dd6e09"
   - dotnet tool install --global dotnet-sonarscanner
   - dotnet sonarscanner begin /k:"jstemerdink:EPi.Libraries.BlockSearch" /n:"EPi.Libraries.BlockSearch" /d:"sonar.host.url=https://sonarcloud.io" /o:"jstemerdink-github" /d:"sonar.login=0b0eec6902ab7d776899f79bfeff15d313dd6e09"
   - dotnet build "EPi.Libraries.BlockSearch.sln"
   - dotnet sonarscanner end /d:"sonar.login=0b0eec6902ab7d776899f79bfeff15d313dd6e09"
-  #- dotnet C:\ProgramData\chocolatey\lib\sonarscanner-msbuild-net5\tools\SonarScanner.MSBuild.dll end /d:"sonar.login=0b0eec6902ab7d776899f79bfeff15d313dd6e09"
 after_build:
 - cmd: nuget pack EPi.Libraries.BlockSearch.csproj -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
 - cmd: appveyor PushArtifact "EPi.Libraries.BlockSearch.%GitVersion_NuGetVersion%.nupkg"

@@ -7,14 +7,14 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <CodeAnalysisRuleSet>Solution Files\EPiServer.Libraries.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
-    <DocumentationFile>bin\Debug\EPi.Libraries.BlockSearch.xml</DocumentationFile>
+    <DocumentationFile></DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DefineConstants>
     </DefineConstants>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Release\EPi.Libraries.BlockSearch.xml</DocumentationFile>
+    <DocumentationFile></DocumentationFile>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
   </PropertyGroup>
   <PropertyGroup>
@@ -27,6 +27,16 @@
     <TargetFramework>net5.0</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <NoWin32Manifest>true</NoWin32Manifest>
+    <PackageIcon>icon.png</PackageIcon>
+    <Copyright>Copyright © Jeroen Stemerdink 2022</Copyright>
+    <PackageProjectUrl>https://github.com/jstemerdink/EPi.Libraries.BlockSearch/</PackageProjectUrl>
+    <Description>Library to enable indexing of blocks on a page.</Description>
+    <RepositoryUrl>https://github.com/jstemerdink/EPi.Libraries.BlockSearch/</RepositoryUrl>
+    <PackageTags>search;blocks</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReleaseNotes>Update for Episerver CMS 12</PackageReleaseNotes>
+    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="readme.txt" />
@@ -38,5 +48,15 @@
   </ItemGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 </Project>
