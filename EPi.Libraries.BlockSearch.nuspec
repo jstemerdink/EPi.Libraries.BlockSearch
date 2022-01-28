@@ -8,7 +8,7 @@
     <owners>Jeroen Stemerdink</owners>
     <projectUrl>https://github.com/jstemerdink/EPi.Libraries.BlockSearch/</projectUrl>
     <iconUrl>https://jstemerdink.files.wordpress.com/2020/02/js-nuget.png</iconUrl>
-	  <icon>icon.png</icon>
+	  <icon>images\icon.png</icon>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Library to enable indexing of blocks on a page.</description>
     <releaseNotes>Update for Episerver CMS 12.</releaseNotes>
@@ -29,5 +29,6 @@
   </metadata>
   <files>
     <file src="readme.txt" target="" />
+    <file src="icon.png" target="images\" />
   </files>
 </package>
