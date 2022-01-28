@@ -15,11 +15,12 @@ install:
 - cmd: nuget sources add -Name EPiServerFeed -Source http://nuget.episerver.com/feed/packages.svc/
 before_build:
 - cmd: nuget restore
-- ps: gitversion /l console /output buildserver /updateAssemblyInfo
+- ps: gitversion /l console /output buildserver /updateAssemblyInfo /updateprojectfiles
 build_script:
   - dotnet tool install --global dotnet-sonarscanner
   - dotnet sonarscanner begin /k:"jstemerdink:EPi.Libraries.BlockSearch" /n:"EPi.Libraries.BlockSearch" /d:"sonar.host.url=https://sonarcloud.io" /o:"jstemerdink-github" /d:"sonar.login=0b0eec6902ab7d776899f79bfeff15d313dd6e09"
-  - dotnet build "EPi.Libraries.BlockSearch.sln"
+  - dotnet pack "EPi.Libraries.BlockSearch.sln"
+  #- dotnet build "EPi.Libraries.BlockSearch.sln" --configuration Release /p:Version=%GitVersion_NuGetVersion%
   - dotnet sonarscanner end /d:"sonar.login=0b0eec6902ab7d776899f79bfeff15d313dd6e09"
 after_build:
 #- cmd: nuget pack EPi.Libraries.BlockSearch.csproj -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
