@@ -14,9 +14,10 @@
     <copyright>Copyright © Jeroen Stemerdink 2022</copyright>
     <tags>search blocks</tags>
     <dependencies>
-	    <group targetFramework="net5.0" />
-		<dependency id="EPiServer.CMS.Core" version="[12.0.3, 13.0.0)" />
-		<dependency id="EPiServer.CMS.AspNetCore" version="[12.0.3, 13.0.0)" />
+	    <group targetFramework="net5.0">
+			<dependency id="EPiServer.CMS.Core" version="[12.0.3, 13.0.0)" />
+			<dependency id="EPiServer.CMS.AspNetCore" version="[12.0.3, 13.0.0)" />
+	    </group>
     </dependencies>
   </metadata>
   <files>
