@@ -8,17 +8,24 @@
     <owners>Jeroen Stemerdink</owners>
     <projectUrl>https://github.com/jstemerdink/EPi.Libraries.BlockSearch/</projectUrl>
     <iconUrl>https://jstemerdink.files.wordpress.com/2020/02/js-nuget.png</iconUrl>
+	  <icon>icon.png</icon>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Library to enable indexing of blocks on a page.</description>
     <releaseNotes>Update for Episerver CMS 12.</releaseNotes>
     <copyright>Copyright © Jeroen Stemerdink 2022</copyright>
     <tags>search blocks</tags>
     <dependencies>
-	    <group targetFramework="net5.0">
-			<dependency id="EPiServer.CMS.Core" version="[12.0.3, 13.0.0)" />
-			<dependency id="EPiServer.CMS.AspNetCore" version="[12.0.3, 13.0.0)" />
-	    </group>
+		<group targetFramework="net5.0">
+			<dependency id="EPiServer.CMS.AspNetCore" version="12.0.3" exclude="Build,Analyzers" />
+			<dependency id="EPiServer.CMS.Core" version="12.0.3" exclude="Build,Analyzers" />
+			<dependency id="EPiServer.Framework.AspNetCore" version="12.0.3" exclude="Build,Analyzers" />
+		</group>
     </dependencies>
+	  <frameworkReferences>
+		  <group targetFramework="net5.0">
+			  <frameworkReference name="Microsoft.AspNetCore.App" />
+		  </group>
+	  </frameworkReferences>
   </metadata>
   <files>
     <file src="readme.txt" target="" />
