@@ -24,6 +24,7 @@
 	  <frameworkReferences>
 		  <group targetFramework="net5.0">
 			  <frameworkReference name="Microsoft.AspNetCore.App" />
+			  <frameworkReference name="Microsoft.NETCore.App" />
 		  </group>
 	  </frameworkReferences>
   </metadata>
