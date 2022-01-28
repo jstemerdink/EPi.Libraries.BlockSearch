@@ -22,8 +22,8 @@ build_script:
   - dotnet build "EPi.Libraries.BlockSearch.sln"
   - dotnet sonarscanner end /d:"sonar.login=0b0eec6902ab7d776899f79bfeff15d313dd6e09"
 after_build:
-- cmd: nuget pack EPi.Libraries.BlockSearch.csproj -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
-- cmd: appveyor PushArtifact "EPi.Libraries.BlockSearch.%GitVersion_NuGetVersion%.nupkg"
+#- cmd: nuget pack EPi.Libraries.BlockSearch.csproj -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
+- cmd: appveyor PushArtifact "%APPVEYOR_BUILD_FOLDER%\bin\Release\EPi.Libraries.BlockSearch.%GitVersion_NuGetVersion%.nupkg"
 - 7z a EPi.Libraries.BlockSearch.%GitVersion_NuGetVersion%.zip %APPVEYOR_BUILD_FOLDER%\bin\Release\net5.0\EPi.Libraries.BlockSearch.dll
 - cmd: appveyor PushArtifact "EPi.Libraries.BlockSearch.%GitVersion_NuGetVersion%.zip"
 before_package:
