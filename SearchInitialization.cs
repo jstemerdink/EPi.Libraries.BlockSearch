@@ -1,4 +1,4 @@
-﻿// Copyright © 2017 Jeroen Stemerdink.
+﻿// Copyright © 2022 Jeroen Stemerdink.
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation
 // files (the "Software"), to deal in the Software without
@@ -37,7 +37,7 @@ namespace EPi.Libraries.BlockSearch
         /// Gets or sets the logger
         /// </summary>
         /// <value>The logger.</value>
-        protected ILogger Logger { get; set; }
+        protected readonly ILogger Logger = LogManager.GetLogger();
 
         /// <summary>
         /// Gets or sets the content events.
@@ -58,9 +58,8 @@ namespace EPi.Libraries.BlockSearch
         /// <remarks>
         ///     Gets called as part of the EPiServer Framework initialization sequence. Note that it will be called
         ///     only once per AppDomain, unless the method throws an exception. If an exception is thrown, the initialization
-        ///     method will be called repeadetly for each request reaching the site until the method succeeds.
+        ///     method will be called repeatedly for each request reaching the site until the method succeeds.
         /// </remarks>
-        /// <exception cref="ActivationException">if there is are errors resolving the service instance.</exception>
         public void Initialize(InitializationEngine context)
         {
             if (context == null)
@@ -68,10 +67,9 @@ namespace EPi.Libraries.BlockSearch
                 return;
             }
 
-            this.Logger = LogManager.GetLogger();
             this.ContentEvents = context.Locate.Advanced.GetInstance<IContentEvents>();
             
-            this.Helper = new Helper(serviceLocator: context.Locate.Advanced);
+            this.Helper = new Helper(serviceProvider: context.Locate.Advanced);
             
             this.ContentEvents.PublishedContent += this.OnPublishedContent;
             this.ContentEvents.PublishingContent += this.OnPublishingContent;
