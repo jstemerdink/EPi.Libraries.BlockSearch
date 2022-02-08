@@ -2,7 +2,7 @@ version: 1.0.{build}
 image: Visual Studio 2022
 configuration: Release
 environment:
-  github_token: 'secure: TaDEavUfTj6EgwcO7y5njQVS5Z9bBU/fVFuSApo5XEO6FSBT5UzJQmyJjbhIFDZb'
+  github_token: 'secure: zuJGSRrCtrCyD+zy7ZNSoSW7XRq8fYp8ouAyCNHCL5I78Rg+rRU9OsOynyHCJqaS'
   myget_token: 'secure: 9Z+KYPk2hI7hg9kYLv/N13fvoqcYCP96isNUkRrKu0v87cw85H62oe/DCwpqvBXF'
 
 init:
@@ -41,7 +41,7 @@ deploy:
     branch: develop         # release from develop branch only
 - provider: GitHub
   auth_token:
-    secure: TaDEavUfTj6EgwcO7y5njQVS5Z9bBU/fVFuSApo5XEO6FSBT5UzJQmyJjbhIFDZb
+    secure: zuJGSRrCtrCyD+zy7ZNSoSW7XRq8fYp8ouAyCNHCL5I78Rg+rRU9OsOynyHCJqaS
   artifact: /.*\.zip/
   on:
     branch: master              # release from master branch only
