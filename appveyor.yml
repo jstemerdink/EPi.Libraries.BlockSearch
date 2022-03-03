@@ -23,8 +23,10 @@ build_script:
   - dotnet sonarscanner end /d:"sonar.login=0b0eec6902ab7d776899f79bfeff15d313dd6e09"
 after_build:
 - cmd: appveyor PushArtifact "%APPVEYOR_BUILD_FOLDER%\bin\Release\EPi.Libraries.BlockSearch.%GitVersion_NuGetVersion%.nupkg"
-- 7z a EPi.Libraries.BlockSearch.%GitVersion_NuGetVersion%.zip %APPVEYOR_BUILD_FOLDER%\bin\Release\net5.0\EPi.Libraries.BlockSearch.dll
-- cmd: appveyor PushArtifact "EPi.Libraries.BlockSearch.%GitVersion_NuGetVersion%.zip"
+- 7z a EPi.Libraries.BlockSearch.Net5.%GitVersion_NuGetVersion%.zip %APPVEYOR_BUILD_FOLDER%\bin\Release\net5.0\EPi.Libraries.BlockSearch.dll 
+- cmd: appveyor PushArtifact "EPi.Libraries.BlockSearch.Net5.%GitVersion_NuGetVersion%.zip"
+- 7z a EPi.Libraries.BlockSearch.Net6.%GitVersion_NuGetVersion%.zip %APPVEYOR_BUILD_FOLDER%\bin\Release\net6.0\EPi.Libraries.BlockSearch.dll 
+- cmd: appveyor PushArtifact "EPi.Libraries.BlockSearch.Net6.%GitVersion_NuGetVersion%.zip"
 before_package:
 - ps: >-
     Write-Host -NoNewline "Installing NuGet 3.3.0..."
