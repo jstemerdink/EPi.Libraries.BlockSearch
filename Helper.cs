@@ -200,8 +200,6 @@ namespace EPi.Libraries.BlockSearch
 
             try
             {
-                ////string additionalSearchContent = TextIndexer.StripHtml(stringBuilder.ToString(), 0);
-
                 HtmlFilter htmlFilter = new HtmlFilter(new StripHtmlFilterRules());
 
                 StringBuilder filteredOuput = new StringBuilder();
