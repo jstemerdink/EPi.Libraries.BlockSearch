@@ -11,19 +11,20 @@ init:
   - set JAVA_HOME=C:\Program Files\Java\jdk15
 
 install:
-- choco install gitversion.portable -pre -y
-- cmd: nuget sources add -Name EPiServerFeed -Source http://nuget.episerver.com/feed/packages.svc/
+- ps: dotnet tool install --global GitVersion.Tool --version 5.*
+- ps: dotnet tool install --global dotnet-sonarscanner
+- cmd: nuget sources add -Name EPiServerFeed -Source https://nuget.episerver.com/feed/packages.svc/
 before_build:
 - cmd: nuget restore
-- ps: gitversion /l console /output buildserver /updateprojectfiles
-build_script:
-  - dotnet tool install --global dotnet-sonarscanner
+- ps: dotnet-gitversion /l console /output buildserver
+build_script:  
   - dotnet sonarscanner begin /k:"jstemerdink:EPi.Libraries.BlockSearch" /n:"EPi.Libraries.BlockSearch" /d:"sonar.host.url=https://sonarcloud.io" /o:"jstemerdink-github" /d:"sonar.login=0b0eec6902ab7d776899f79bfeff15d313dd6e09"
-  - dotnet pack "EPi.Libraries.BlockSearch.sln" /p:Version=%GitVersion_MajorMinorPatch%;AssemblyVersion=%GitVersion_AssemblySemVer%;FileVersion=%GitVersion_AssemblySemFileVer%;ProductVersion=%GitVersion_MajorMinorPatch%;PackageVersion=%GitVersion_NuGetVersion%
+  - dotnet build "EPi.Libraries.BlockSearch.sln" --no-restore -c Release -p:Version=%GitVersion_MajorMinorPatch% -p:AssemblyVersion=%GitVersion_AssemblySemVer% -p:FileVersion=%GitVersion_AssemblySemFileVer% -p:ProductVersion=%GitVersion_MajorMinorPatch%
+  - dotnet pack "EPi.Libraries.BlockSearch.sln" --no-build -c Release -p:PackageVersion=%GitVersion_NuGetVersion%
   - dotnet sonarscanner end /d:"sonar.login=0b0eec6902ab7d776899f79bfeff15d313dd6e09"
 after_build:
 - cmd: appveyor PushArtifact "%APPVEYOR_BUILD_FOLDER%\bin\Release\EPi.Libraries.BlockSearch.%GitVersion_NuGetVersion%.nupkg"
-- 7z a EPi.Libraries.BlockSearch.%GitVersion_NuGetVersion%.zip %APPVEYOR_BUILD_FOLDER%\bin\Release\net5.0\EPi.Libraries.BlockSearch.dll
+- 7z a EPi.Libraries.BlockSearch.%GitVersion_NuGetVersion%.zip %APPVEYOR_BUILD_FOLDER%\bin\Release\*\*.dll 
 - cmd: appveyor PushArtifact "EPi.Libraries.BlockSearch.%GitVersion_NuGetVersion%.zip"
 before_package:
 - ps: >-
