@@ -41,6 +41,7 @@
   <ItemGroup>
     <None Remove="icon.png" />
     <None Remove="README.md" />
+    <None Remove="readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon.png">
@@ -51,7 +52,10 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </Content>
-    <Content Include="readme.txt" />
+    <Content Include="readme.txt">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
