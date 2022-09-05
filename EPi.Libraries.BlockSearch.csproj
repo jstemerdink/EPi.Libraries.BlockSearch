@@ -54,11 +54,9 @@
     <Content Include="readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="EPiServer.CMS.AspNetCore" Version="12.4.0" />
-    <PackageReference Include="EPiServer.CMS.Core" Version="12.4.0" />
-    <PackageReference Include="EPiServer.Framework.AspNetCore" Version="12.4.0" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="EPiServer.CMS" Version="12.4.0" />
   </ItemGroup>
 </Project>
