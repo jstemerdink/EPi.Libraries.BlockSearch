@@ -13,7 +13,7 @@ init:
 install:
 - ps: dotnet tool install --global GitVersion.Tool --version 5.*
 - ps: dotnet tool install --global dotnet-sonarscanner
-- cmd: nuget sources add -Name EPiServerFeed -Source http://nuget.episerver.com/feed/packages.svc/
+- cmd: nuget sources add -Name EPiServerFeed -Source https://nuget.episerver.com/feed/packages.svc/
 before_build:
 - cmd: nuget restore
 - ps: dotnet-gitversion /l console /output buildserver
@@ -25,7 +25,7 @@ build_script:
 after_build:
 - cmd: appveyor PushArtifact "%APPVEYOR_BUILD_FOLDER%\bin\Release\EPi.Libraries.BlockSearch.%GitVersion_NuGetVersion%.nupkg"
 - 7z a EPi.Libraries.BlockSearch.%GitVersion_NuGetVersion%.zip %APPVEYOR_BUILD_FOLDER%\bin\Release\*\*.dll 
-- cmd: appveyor PushArtifact "EPi.Libraries.BlockSearch.Net5.%GitVersion_NuGetVersion%.zip"
+- cmd: appveyor PushArtifact "EPi.Libraries.BlockSearch.%GitVersion_NuGetVersion%.zip"
 before_package:
 - ps: >-
     Write-Host -NoNewline "Installing NuGet 3.3.0..."
