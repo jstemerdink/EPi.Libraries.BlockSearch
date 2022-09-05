@@ -22,6 +22,7 @@ namespace EPi.Libraries.BlockSearch
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.IO;
     using System.Linq;
     using System.Reflection;
     using System.Text;
@@ -33,6 +34,8 @@ namespace EPi.Libraries.BlockSearch
     using EPiServer.Core.Html;
     using EPiServer.DataAbstraction;
     using EPiServer.DataAccess;
+    using EPiServer.HtmlParsing;
+    using EPiServer.HtmlParsing.Internal;
     using EPiServer.Logging;
     using EPiServer.Security;
     using EPiServer.ServiceLocation;
@@ -197,9 +200,19 @@ namespace EPi.Libraries.BlockSearch
 
             try
             {
-                string additionalSearchContent = TextIndexer.StripHtml(stringBuilder.ToString(), 0);
+                HtmlFilter htmlFilter = new HtmlFilter(new StripHtmlFilterRules());
 
+                StringBuilder filteredOuput = new StringBuilder();
+                StringWriter outputWriter = new StringWriter(filteredOuput);
+
+                htmlFilter.FilterHtml(new StringReader(stringBuilder.ToString()), outputWriter);
+                outputWriter.Dispose();
+                
+                string additionalSearchContent = filteredOuput.ToString();
+                
                 parent[index: addtionalSearchContentProperty.Name] = additionalSearchContent;
+
+                outputWriter.Dispose();
             }
             catch (EPiServerException epiServerException)
             {

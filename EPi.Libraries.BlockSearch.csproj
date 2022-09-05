@@ -24,7 +24,7 @@
     <AssemblyOriginatorKeyFile>EPiServer.Libraries.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <NoWin32Manifest>true</NoWin32Manifest>
@@ -39,24 +39,28 @@
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="readme.txt" />
+    <None Remove="icon.png" />
+    <None Remove="README.md" />
+    <None Remove="readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="EPiServer.CMS.AspNetCore" Version="12.0.3" />
-    <PackageReference Include="EPiServer.CMS.Core" Version="12.0.3" />
-    <PackageReference Include="EPiServer.Framework.AspNetCore" Version="12.0.3" />
+    <Content Include="icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </Content>
+    <Content Include="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </Content>
+    <Content Include="readme.txt">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="icon.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-    <None Update="README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
+    <PackageReference Include="EPiServer.CMS" Version="12.4.0" />
   </ItemGroup>
 </Project>
