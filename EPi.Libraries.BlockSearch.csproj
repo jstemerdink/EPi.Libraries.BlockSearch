@@ -24,18 +24,20 @@
     <AssemblyOriginatorKeyFile>EPiServer.Libraries.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>net10.0</TargetFrameworks>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <NoWin32Manifest>true</NoWin32Manifest>
     <PackageIcon>icon.png</PackageIcon>
-    <Copyright>Copyright © Jeroen Stemerdink 2022</Copyright>
+	<Authors>Jeroen Stemerdink</Authors>
+	<Company>Jeroen Stemerdink</Company>
+    <Copyright>Copyright © Jeroen Stemerdink 2026</Copyright>
     <PackageProjectUrl>https://github.com/jstemerdink/EPi.Libraries.BlockSearch/</PackageProjectUrl>
     <Description>Library to enable indexing of blocks on a page.</Description>
     <RepositoryUrl>https://github.com/jstemerdink/EPi.Libraries.BlockSearch/</RepositoryUrl>
-    <PackageTags>search;blocks</PackageTags>
+    <PackageTags>search;blocks;EPiServerModulePackage</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>Update for Episerver CMS 12</PackageReleaseNotes>
+    <PackageReleaseNotes>Update for Episerver CMS 13</PackageReleaseNotes>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
   </PropertyGroup>
   <ItemGroup>
@@ -61,6 +63,6 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="EPiServer.CMS" Version="12.4.0" />
+    <PackageReference Include="EPiServer.CMS" Version="13.0.0" />
   </ItemGroup>
 </Project>

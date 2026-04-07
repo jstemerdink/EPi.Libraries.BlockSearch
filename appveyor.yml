@@ -2,7 +2,7 @@ version: 1.0.{build}
 image: Visual Studio 2022
 configuration: Release
 environment:
-  github_token: 'secure: zuJGSRrCtrCyD+zy7ZNSoSW7XRq8fYp8ouAyCNHCL5I78Rg+rRU9OsOynyHCJqaS'
+  github_token: 'secure: ac41/mlJHr2v56Eiboma2jy8m3h4/AGpk6lP/HXPq9gsX0/21/AGqFgLvh6WutTi'
   myget_token: 'secure: 9Z+KYPk2hI7hg9kYLv/N13fvoqcYCP96isNUkRrKu0v87cw85H62oe/DCwpqvBXF'
 
 init:
@@ -14,9 +14,13 @@ install:
 - ps: dotnet tool install --global GitVersion.Tool --version 5.*
 - ps: dotnet tool install --global dotnet-sonarscanner
 - cmd: nuget sources add -Name EPiServerFeed -Source https://nuget.episerver.com/feed/packages.svc/
+- ps: |
+    Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -UseBasicParsing -OutFile "$env:temp\dotnet-install.ps1"
+    & $env:temp\dotnet-install.ps1 -Architecture x64 -Version '10.0.100' -InstallDir "$env:ProgramFiles\dotnet"
 before_build:
 - cmd: nuget restore
 - ps: dotnet-gitversion /l console /output buildserver
+- cmd: dotnet --version
 build_script:  
   - dotnet sonarscanner begin /k:"jstemerdink:EPi.Libraries.BlockSearch" /n:"EPi.Libraries.BlockSearch" /d:"sonar.host.url=https://sonarcloud.io" /o:"jstemerdink-github" /d:"sonar.login=0b0eec6902ab7d776899f79bfeff15d313dd6e09"
   - dotnet build "EPi.Libraries.BlockSearch.sln" --no-restore -c Release -p:Version=%GitVersion_MajorMinorPatch% -p:AssemblyVersion=%GitVersion_AssemblySemVer% -p:FileVersion=%GitVersion_AssemblySemFileVer% -p:ProductVersion=%GitVersion_MajorMinorPatch%
@@ -42,7 +46,7 @@ deploy:
     branch: develop         # release from develop branch only
 - provider: GitHub
   auth_token:
-    secure: zuJGSRrCtrCyD+zy7ZNSoSW7XRq8fYp8ouAyCNHCL5I78Rg+rRU9OsOynyHCJqaS
+    secure: ac41/mlJHr2v56Eiboma2jy8m3h4/AGpk6lP/HXPq9gsX0/21/AGqFgLvh6WutTi
   artifact: /.*\.zip/
   on:
     branch: master              # release from master branch only

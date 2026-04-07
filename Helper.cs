@@ -1,4 +1,4 @@
-﻿// Copyright © 2022 Jeroen Stemerdink.
+﻿// Copyright © 2026 Jeroen Stemerdink.
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation
 // files (the "Software"), to deal in the Software without
@@ -19,6 +19,16 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 namespace EPi.Libraries.BlockSearch
 {
+    using DataAnnotations;
+    using EPiServer;
+    using EPiServer.Core;
+    using EPiServer.DataAbstraction;
+    using EPiServer.DataAccess;
+    using EPiServer.HtmlParsing;
+    using EPiServer.Security;
+    using EPiServer.SpecializedProperties;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
@@ -26,20 +36,6 @@ namespace EPi.Libraries.BlockSearch
     using System.Linq;
     using System.Reflection;
     using System.Text;
-
-    using EPi.Libraries.BlockSearch.DataAnnotations;
-
-    using EPiServer;
-    using EPiServer.Core;
-    using EPiServer.Core.Html;
-    using EPiServer.DataAbstraction;
-    using EPiServer.DataAccess;
-    using EPiServer.HtmlParsing;
-    using EPiServer.HtmlParsing.Internal;
-    using EPiServer.Logging;
-    using EPiServer.Security;
-    using EPiServer.ServiceLocation;
-    using EPiServer.SpecializedProperties;
 
     /// <summary>
     /// Class Helper.
@@ -50,19 +46,21 @@ namespace EPi.Libraries.BlockSearch
         /// Gets the logger
         /// </summary>
         /// <value>The logger.</value>
-        private readonly ILogger logger = LogManager.GetLogger();
+        private readonly ILogger<Helper> _logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Helper"/> class.
+        /// Initializes a new instance of the <see cref="Helper" /> class.
         /// </summary>
         /// <param name="contentRepository">The content repository.</param>
         /// <param name="contentSoftLinkRepository">The content soft link repository.</param>
         /// <param name="contentTypeRepository">The content type repository.</param>
-        public Helper(IContentRepository contentRepository, IContentSoftLinkRepository contentSoftLinkRepository, IContentTypeRepository contentTypeRepository)
+        /// <param name="loggerFactory">The logger factory.</param>
+        public Helper(IContentRepository contentRepository, IContentSoftLinkRepository contentSoftLinkRepository, IContentTypeRepository contentTypeRepository, ILoggerFactory loggerFactory)
         {
-            this.ContentRepository = contentRepository;
-            this.ContentSoftLinkRepository = contentSoftLinkRepository;
-            this.ContentTypeRepository = contentTypeRepository;
+            ContentRepository = contentRepository;
+            ContentSoftLinkRepository = contentSoftLinkRepository;
+            ContentTypeRepository = contentTypeRepository;
+            _logger = loggerFactory.CreateLogger<Helper>();
         }
 
         /// <summary>
@@ -72,14 +70,11 @@ namespace EPi.Libraries.BlockSearch
         /// <exception cref="ArgumentNullException"><paramref name="serviceProvider"/> is <see langword="null"/></exception>
         public Helper(IServiceProvider serviceProvider)
         {
-            if (serviceProvider == null)
-            {
-                throw new ArgumentNullException(nameof(serviceProvider));
-            }
+            ArgumentNullException.ThrowIfNull(serviceProvider);
 
-            this.ContentRepository = serviceProvider.GetInstance<IContentRepository>();
-            this.ContentSoftLinkRepository = serviceProvider.GetInstance<IContentSoftLinkRepository>();
-            this.ContentTypeRepository = serviceProvider.GetInstance<IContentTypeRepository>();
+            ContentRepository = serviceProvider.GetRequiredService<IContentRepository>();
+            ContentSoftLinkRepository = serviceProvider.GetRequiredService<IContentSoftLinkRepository>();
+            ContentTypeRepository = serviceProvider.GetRequiredService<IContentTypeRepository>();
         }
 
         /// <summary>
@@ -95,9 +90,9 @@ namespace EPi.Libraries.BlockSearch
         private IContentSoftLinkRepository ContentSoftLinkRepository { get; }
 
         /// <summary>
-        ///     Gets the content type respository.
+        ///     Gets the content type repository.
         /// </summary>
-        /// <value>The content type respository.</value>
+        /// <value>The content type repository.</value>
         private IContentTypeRepository ContentTypeRepository { get; }
 
         /// <summary>
@@ -107,7 +102,7 @@ namespace EPi.Libraries.BlockSearch
         public void UpdateParents(ContentReference contentLink)
         {
             // Get the references to this block
-            List<ContentReference> referencingContentLinks = this.ContentSoftLinkRepository.Load(contentLink: contentLink, reversed: true)
+            List<ContentReference> referencingContentLinks = ContentSoftLinkRepository.Load(contentLink: contentLink, reversed: true)
                     .Where(
                         link =>
                         link.SoftLinkType == ReferenceType.PageLinkReference
@@ -118,38 +113,33 @@ namespace EPi.Libraries.BlockSearch
             // Loop through each reference
             foreach (ContentReference referencingContentLink in referencingContentLinks)
             {
-                this.ContentRepository.TryGet(contentLink: referencingContentLink, content: out PageData parent);
+                ContentRepository.TryGet(contentLink: referencingContentLink, content: out PageData parent);
 
-                // If it is not pagedata, do nothing
+                // If it is not page data, do nothing
                 if (parent == null)
                 {
-                    this.logger.Information("[Blocksearch] Referencing content is not a page. Skipping update.");
+                    _logger.LogInformation("[Blocksearch] Referencing content is not a page. Skipping update");
                     continue;
                 }
 
                 // Check if the containing page is published.
                 if (!parent.CheckPublishedStatus(status: PagePublishedStatus.Published))
                 {
-                    this.logger.Information("[Blocksearch] page named '{0}' is not published. Skipping update.", parent.Name);
+                    _logger.LogInformation("[Blocksearch] page named '{ParentName}' is not published. Skipping update", parent.Name);
                     continue;
                 }
 
                 // Republish the containing page.
                 try
                 {
-                    this.ContentRepository.Save(
+                    ContentRepository.Save(
                             parent.CreateWritableClone(),
-                            SaveAction.Publish | SaveAction.ForceCurrentVersion,
+                            SaveAction.Publish | SaveAction.ForceCurrentVersion | SaveAction.SkipValidation,
                             access: AccessLevel.NoAccess);
                 }
                 catch (AccessDeniedException accessDeniedException)
                 {
-                    this.logger.Error(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "[Blocksearch] Not enough accessrights to republish containing pagetype named '{0}'.",
-                            parent.Name),
-                        exception: accessDeniedException);
+                    _logger.LogError(accessDeniedException, "[Blocksearch] Not enough access rights to republish containing page type named '{ParentName}'", parent.Name);
                 }
             }
         }
@@ -160,21 +150,21 @@ namespace EPi.Libraries.BlockSearch
         /// <param name="parent">The parent.</param>
         public void UpdateAdditionalSearchContent(PageData parent)
         {
-            PropertyInfo addtionalSearchContentProperty = this.GetAddtionalSearchContentProperty(page: parent);
+            PropertyInfo additionalSearchContentProperty = GetAdditionalSearchContentProperty(page: parent);
 
-            if (addtionalSearchContentProperty == null)
+            if (additionalSearchContentProperty == null)
             {
                 return;
             }
 
-            if (addtionalSearchContentProperty.PropertyType != typeof(string))
+            if (additionalSearchContentProperty.PropertyType != typeof(string))
             {
                 return;
             }
 
-            StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder stringBuilder = new();
 
-            ContentType contentType = this.ContentTypeRepository.Load(id: parent.ContentTypeID);
+            ContentType contentType = ContentTypeRepository.Load(id: parent.ContentTypeID);
 
             foreach (PropertyDefinition current in from d in contentType.PropertyDefinitions
                                                    where typeof(PropertyContentArea).IsAssignableFrom(
@@ -183,46 +173,40 @@ namespace EPi.Libraries.BlockSearch
             {
                 PropertyData propertyData = parent.Property[name: current.Name];
 
-                ContentArea contentArea = propertyData.Value as ContentArea;
 
-                if (contentArea == null)
+                if (propertyData.Value is not ContentArea contentArea)
                 {
                     continue;
                 }
 
-                stringBuilder.Append(this.GetAdditionalContent(contentArea: contentArea));
+                stringBuilder.Append(GetAdditionalContent(contentArea: contentArea));
             }
 
-            if (addtionalSearchContentProperty.PropertyType != typeof(string))
+            if (additionalSearchContentProperty.PropertyType != typeof(string))
             {
                 return;
             }
 
             try
             {
-                HtmlFilter htmlFilter = new HtmlFilter(new StripHtmlFilterRules());
+                HtmlFilter htmlFilter = new(FilterRules.StripHtml);
 
-                StringBuilder filteredOuput = new StringBuilder();
-                StringWriter outputWriter = new StringWriter(filteredOuput);
+                StringBuilder filteredOutput = new();
+                StringWriter outputWriter = new(filteredOutput);
 
                 htmlFilter.FilterHtml(new StringReader(stringBuilder.ToString()), outputWriter);
                 outputWriter.Dispose();
                 
-                string additionalSearchContent = filteredOuput.ToString();
+                string additionalSearchContent = filteredOutput.ToString();
                 
-                parent[index: addtionalSearchContentProperty.Name] = additionalSearchContent;
+                parent[index: additionalSearchContentProperty.Name] = additionalSearchContent;
 
                 outputWriter.Dispose();
             }
             catch (EPiServerException epiServerException)
             {
-                this.logger.Error(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "[Blocksearch] Property {0} does not exist on {1}.",
-                        addtionalSearchContentProperty.Name,
-                        parent.Name),
-                    exception: epiServerException);
+                _logger.LogError(epiServerException, "[Blocksearch] Property {PropertyName} does not exist on {ParentName}", additionalSearchContentProperty.Name,
+                    parent.Name);
             }
         }
 
@@ -233,11 +217,11 @@ namespace EPi.Libraries.BlockSearch
         /// <returns>The additional search content.</returns>
         private string GetAdditionalContent(ContentArea contentArea)
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder stringBuilder = new();
 
             foreach (ContentAreaItem contentAreaItem in contentArea.Items)
             {
-                if (!this.ContentRepository.TryGet(contentLink: contentAreaItem.ContentLink, content: out IContent content))
+                if (!ContentRepository.TryGet(contentLink: contentAreaItem.ContentLink, content: out IContent content))
                 {
                     continue;
                 }
@@ -249,20 +233,15 @@ namespace EPi.Libraries.BlockSearch
                 }
 
                 // Check if the content is indeed a block, and not a page used in a content area
-                BlockData blockData = content as BlockData;
 
                 // Content area is not a block, but probably a page used as a teaser.
-                if (blockData == null)
+                if (content is not BlockData)
                 {
-                    this.logger.Information(
-                        "[Blocksearch] Contentarea item is not block data. Skipping update.",
-                        content.Name);
+                    _logger.LogInformation("[Blocksearch] Content area item {ContentName} is not block data. Skipping update", content.Name);
                     continue;
                 }
 
-                IEnumerable<string> props = this.GetSearchablePropertyValues(
-                    contentData: content,
-                    contentTypeId: content.ContentTypeID);
+                IEnumerable<string> props = GetSearchablePropertyValues(content, content.ContentTypeID);
                 stringBuilder.AppendFormat(CultureInfo.InvariantCulture, " {0}", string.Join(" ", values: props));
             }
 
@@ -273,13 +252,13 @@ namespace EPi.Libraries.BlockSearch
         ///     Gets the name of the key word property.
         /// </summary>
         /// <param name="page">The page.</param>
-        /// <returns>The propertyinfo.</returns>
-        private PropertyInfo GetAddtionalSearchContentProperty(PageData page)
+        /// <returns>The property info.</returns>
+        private PropertyInfo GetAdditionalSearchContentProperty(PageData page)
         {
-            PropertyInfo keywordsMetatagProperty = page.GetType().GetProperties()
-                .FirstOrDefault(predicate: this.HasAttribute<AdditionalSearchContentAttribute>);
+            PropertyInfo keywordsMetaTagProperty = page.GetType().GetProperties()
+                .FirstOrDefault(predicate: HasAttribute<AdditionalSearchContentAttribute>);
 
-            return keywordsMetatagProperty;
+            return keywordsMetaTagProperty;
         }
 
         /// <summary>
@@ -287,7 +266,7 @@ namespace EPi.Libraries.BlockSearch
         /// </summary>
         /// <param name="contentData">The content data.</param>
         /// <param name="contentType">Type of the content.</param>
-        /// <returns>A list of prperty values.</returns>
+        /// <returns>A list of pr0perty values.</returns>
         private IEnumerable<string> GetSearchablePropertyValues(
             IContentData contentData,
             ContentType contentType)
@@ -298,7 +277,7 @@ namespace EPi.Libraries.BlockSearch
             }
 
             foreach (PropertyDefinition current in from d in contentType.PropertyDefinitions
-                                                   where d.Searchable
+                                                   where d.IndexingType == IndexingType.Searchable
                                                          || typeof(IPropertyBlock).IsAssignableFrom(
                                                              c: d.Type.DefinitionType)
                                                    select d)
@@ -307,9 +286,9 @@ namespace EPi.Libraries.BlockSearch
 
                 if (propertyData is IPropertyBlock propertyBlock)
                 {
-                    foreach (string current2 in this.GetSearchablePropertyValues(
-                        contentData: propertyBlock.Block,
-                        contentTypeId: propertyBlock.BlockPropertyDefinitionTypeID))
+                    foreach (string current2 in GetSearchablePropertyValues(
+                        propertyBlock.Block,
+                        propertyBlock.ItemTypeReference.GUID))
                     {
                         yield return current2;
                     }
@@ -322,16 +301,29 @@ namespace EPi.Libraries.BlockSearch
         }
 
         /// <summary>
-        ///     Gets the searchable property values.
+        /// Gets the searchable property values.
+        /// </summary>
+        /// <param name="contentData">The content data.</param>
+        /// <param name="contentTypeGuid">The content type unique identifier.</param>
+        /// <returns>A list of searchable property values.</returns>
+        private IEnumerable<string> GetSearchablePropertyValues(IContentData contentData, Guid contentTypeGuid)
+        {
+            return GetSearchablePropertyValues(
+                contentData: contentData,
+                contentType: ContentTypeRepository.Load(contentTypeGuid));
+        }
+
+        /// <summary>
+        /// Gets the searchable property values.
         /// </summary>
         /// <param name="contentData">The content data.</param>
         /// <param name="contentTypeId">The content type identifier.</param>
         /// <returns>A list of searchable property values.</returns>
         private IEnumerable<string> GetSearchablePropertyValues(IContentData contentData, int contentTypeId)
         {
-            return this.GetSearchablePropertyValues(
+            return GetSearchablePropertyValues(
                 contentData: contentData,
-                contentType: this.ContentTypeRepository.Load(id: contentTypeId));
+                contentType: ContentTypeRepository.Load(contentTypeId));
         }
 
         /// <summary>
@@ -343,7 +335,7 @@ namespace EPi.Libraries.BlockSearch
         private bool HasAttribute<T>(MemberInfo memberInfo)
             where T : Attribute
         {
-            T attr = default(T);
+            T attr = null;
 
             try
             {
@@ -351,7 +343,7 @@ namespace EPi.Libraries.BlockSearch
             }
             catch (Exception exception)
             {
-                this.logger.Error("[Blocksearch] Error getting custom attribute.", exception: exception);
+                _logger.LogError(exception, "[Blocksearch] Error getting custom attribute");
             }
 
             return attr != null;
