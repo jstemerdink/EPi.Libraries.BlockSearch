@@ -27,6 +27,7 @@ namespace EPi.Libraries.BlockSearch
     using EPiServer.Framework;
     using EPiServer.Framework.Initialization;
     using EPiServer.Logging;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     ///     Class SearchInitialization.
@@ -39,7 +40,7 @@ namespace EPi.Libraries.BlockSearch
         /// Gets or sets the logger
         /// </summary>
         /// <value>The logger.</value>
-        protected readonly ILogger Logger = LogManager.GetLogger();
+        protected ILogger<SearchInitialization> Logger;
 
         /// <summary>
         /// Gets or sets the content events.
@@ -70,13 +71,14 @@ namespace EPi.Libraries.BlockSearch
             }
 
             this.ContentEvents = context.Services.GetRequiredService<IContentEvents>();
+            this.Logger = context.Services.GetRequiredService<ILogger<SearchInitialization>>();
             
             this.Helper = new Helper(serviceProvider: context.Services);
             
             this.ContentEvents.PublishedContent += this.OnPublishedContent;
             this.ContentEvents.PublishingContent += this.OnPublishingContent;
 
-            this.Logger.Information("[Blocksearch] Initialized.");
+            this.Logger.LogInformation("[Blocksearch] Initialized");
         }
 
         /// <summary>
@@ -94,7 +96,7 @@ namespace EPi.Libraries.BlockSearch
             // Check if the content that is published is indeed a block.
 
             // If it's not, don't do anything.
-            if (contentEventArgs.Content is not BlockData blockData)
+            if (contentEventArgs.Content is not BlockData)
             {
                 return;
             }
@@ -152,7 +154,7 @@ namespace EPi.Libraries.BlockSearch
             this.ContentEvents.PublishedContent -= this.OnPublishedContent;
             this.ContentEvents.PublishingContent -= this.OnPublishingContent;
 
-            this.Logger.Information("[Blocksearch] Uninitialized.");
+            this.Logger.LogInformation("[Blocksearch] Uninitialized");
         }
     }
 }

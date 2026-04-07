@@ -25,10 +25,10 @@ namespace EPi.Libraries.BlockSearch
     using EPiServer.DataAbstraction;
     using EPiServer.DataAccess;
     using EPiServer.HtmlParsing;
-    using EPiServer.Logging;
     using EPiServer.Security;
     using EPiServer.SpecializedProperties;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
@@ -46,19 +46,21 @@ namespace EPi.Libraries.BlockSearch
         /// Gets the logger
         /// </summary>
         /// <value>The logger.</value>
-        private readonly ILogger _logger = LogManager.GetLogger();
+        private readonly ILogger<Helper> _logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Helper"/> class.
+        /// Initializes a new instance of the <see cref="Helper" /> class.
         /// </summary>
         /// <param name="contentRepository">The content repository.</param>
         /// <param name="contentSoftLinkRepository">The content soft link repository.</param>
         /// <param name="contentTypeRepository">The content type repository.</param>
-        public Helper(IContentRepository contentRepository, IContentSoftLinkRepository contentSoftLinkRepository, IContentTypeRepository contentTypeRepository)
+        /// <param name="loggerFactory">The logger factory.</param>
+        public Helper(IContentRepository contentRepository, IContentSoftLinkRepository contentSoftLinkRepository, IContentTypeRepository contentTypeRepository, ILoggerFactory loggerFactory)
         {
             ContentRepository = contentRepository;
             ContentSoftLinkRepository = contentSoftLinkRepository;
             ContentTypeRepository = contentTypeRepository;
+            _logger = loggerFactory.CreateLogger<Helper>();
         }
 
         /// <summary>
@@ -116,14 +118,14 @@ namespace EPi.Libraries.BlockSearch
                 // If it is not page data, do nothing
                 if (parent == null)
                 {
-                    _logger.Information("[Blocksearch] Referencing content is not a page. Skipping update.");
+                    _logger.LogInformation("[Blocksearch] Referencing content is not a page. Skipping update");
                     continue;
                 }
 
                 // Check if the containing page is published.
                 if (!parent.CheckPublishedStatus(status: PagePublishedStatus.Published))
                 {
-                    _logger.Information("[Blocksearch] page named '{0}' is not published. Skipping update.", parent.Name);
+                    _logger.LogInformation("[Blocksearch] page named '{ParentName}' is not published. Skipping update", parent.Name);
                     continue;
                 }
 
@@ -137,12 +139,7 @@ namespace EPi.Libraries.BlockSearch
                 }
                 catch (AccessDeniedException accessDeniedException)
                 {
-                    _logger.Error(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "[Blocksearch] Not enough accessrights to republish containing pagetype named '{0}'.",
-                            parent.Name),
-                        exception: accessDeniedException);
+                    _logger.LogError(accessDeniedException, "[Blocksearch] Not enough access rights to republish containing page type named '{ParentName}'", parent.Name);
                 }
             }
         }
@@ -153,14 +150,14 @@ namespace EPi.Libraries.BlockSearch
         /// <param name="parent">The parent.</param>
         public void UpdateAdditionalSearchContent(PageData parent)
         {
-            PropertyInfo addtionalSearchContentProperty = GetAdditionalSearchContentProperty(page: parent);
+            PropertyInfo additionalSearchContentProperty = GetAdditionalSearchContentProperty(page: parent);
 
-            if (addtionalSearchContentProperty == null)
+            if (additionalSearchContentProperty == null)
             {
                 return;
             }
 
-            if (addtionalSearchContentProperty.PropertyType != typeof(string))
+            if (additionalSearchContentProperty.PropertyType != typeof(string))
             {
                 return;
             }
@@ -185,7 +182,7 @@ namespace EPi.Libraries.BlockSearch
                 stringBuilder.Append(GetAdditionalContent(contentArea: contentArea));
             }
 
-            if (addtionalSearchContentProperty.PropertyType != typeof(string))
+            if (additionalSearchContentProperty.PropertyType != typeof(string))
             {
                 return;
             }
@@ -202,19 +199,14 @@ namespace EPi.Libraries.BlockSearch
                 
                 string additionalSearchContent = filteredOutput.ToString();
                 
-                parent[index: addtionalSearchContentProperty.Name] = additionalSearchContent;
+                parent[index: additionalSearchContentProperty.Name] = additionalSearchContent;
 
                 outputWriter.Dispose();
             }
             catch (EPiServerException epiServerException)
             {
-                _logger.Error(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "[Blocksearch] Property {0} does not exist on {1}.",
-                        addtionalSearchContentProperty.Name,
-                        parent.Name),
-                    exception: epiServerException);
+                _logger.LogError(epiServerException, "[Blocksearch] Property {PropertyName} does not exist on {ParentName}", additionalSearchContentProperty.Name,
+                    parent.Name);
             }
         }
 
@@ -243,9 +235,9 @@ namespace EPi.Libraries.BlockSearch
                 // Check if the content is indeed a block, and not a page used in a content area
 
                 // Content area is not a block, but probably a page used as a teaser.
-                if (content is not BlockData blockData)
+                if (content is not BlockData)
                 {
-                    _logger.Information("[Blocksearch] Content area item {ContentName} is not block data. Skipping update", content.Name);
+                    _logger.LogInformation("[Blocksearch] Content area item {ContentName} is not block data. Skipping update", content.Name);
                     continue;
                 }
 
@@ -263,10 +255,10 @@ namespace EPi.Libraries.BlockSearch
         /// <returns>The property info.</returns>
         private PropertyInfo GetAdditionalSearchContentProperty(PageData page)
         {
-            PropertyInfo keywordsMetatagProperty = page.GetType().GetProperties()
+            PropertyInfo keywordsMetaTagProperty = page.GetType().GetProperties()
                 .FirstOrDefault(predicate: HasAttribute<AdditionalSearchContentAttribute>);
 
-            return keywordsMetatagProperty;
+            return keywordsMetaTagProperty;
         }
 
         /// <summary>
@@ -351,7 +343,7 @@ namespace EPi.Libraries.BlockSearch
             }
             catch (Exception exception)
             {
-                _logger.Error("[Blocksearch] Error getting custom attribute.", exception: exception);
+                _logger.LogError(exception, "[Blocksearch] Error getting custom attribute");
             }
 
             return attr != null;
