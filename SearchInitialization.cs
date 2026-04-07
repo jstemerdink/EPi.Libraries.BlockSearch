@@ -1,4 +1,4 @@
-﻿// Copyright © 2022 Jeroen Stemerdink.
+﻿// Copyright © 2026 Jeroen Stemerdink.
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation
 // files (the "Software"), to deal in the Software without
@@ -17,6 +17,9 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
+
+using Microsoft.Extensions.DependencyInjection;
+
 namespace EPi.Libraries.BlockSearch
 {
     using EPiServer;
@@ -24,7 +27,6 @@ namespace EPi.Libraries.BlockSearch
     using EPiServer.Framework;
     using EPiServer.Framework.Initialization;
     using EPiServer.Logging;
-    using EPiServer.ServiceLocation;
 
     /// <summary>
     ///     Class SearchInitialization.
@@ -67,9 +69,9 @@ namespace EPi.Libraries.BlockSearch
                 return;
             }
 
-            this.ContentEvents = context.Locate.Advanced.GetInstance<IContentEvents>();
+            this.ContentEvents = context.Services.GetRequiredService<IContentEvents>();
             
-            this.Helper = new Helper(serviceProvider: context.Locate.Advanced);
+            this.Helper = new Helper(serviceProvider: context.Services);
             
             this.ContentEvents.PublishedContent += this.OnPublishedContent;
             this.ContentEvents.PublishingContent += this.OnPublishingContent;
@@ -90,10 +92,9 @@ namespace EPi.Libraries.BlockSearch
             }
 
             // Check if the content that is published is indeed a block.
-            BlockData blockData = contentEventArgs.Content as BlockData;
 
             // If it's not, don't do anything.
-            if (blockData == null)
+            if (contentEventArgs.Content is not BlockData blockData)
             {
                 return;
             }
@@ -114,7 +115,7 @@ namespace EPi.Libraries.BlockSearch
             }
 
             // Check if the content that is published is a page. If it's not, don't do anything.
-            if (!(contentEventArgs.Content is PageData pageData))
+            if (contentEventArgs.Content is not PageData pageData)
             {
                 return;
             }
