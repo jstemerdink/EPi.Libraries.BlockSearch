@@ -42,11 +42,10 @@ namespace EPi.Libraries.BlockSearch
     /// </summary>
     public class Helper
     {
-        /// <summary>
-        /// Gets the logger
-        /// </summary>
-        /// <value>The logger.</value>
         private readonly ILogger<Helper> _logger;
+        private readonly IContentRepository _contentRepository;
+        private readonly IContentSoftLinkRepository _contentSoftLinkRepository;
+        private readonly IContentTypeRepository _contentTypeRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Helper" /> class.
@@ -54,13 +53,13 @@ namespace EPi.Libraries.BlockSearch
         /// <param name="contentRepository">The content repository.</param>
         /// <param name="contentSoftLinkRepository">The content soft link repository.</param>
         /// <param name="contentTypeRepository">The content type repository.</param>
-        /// <param name="loggerFactory">The logger factory.</param>
-        public Helper(IContentRepository contentRepository, IContentSoftLinkRepository contentSoftLinkRepository, IContentTypeRepository contentTypeRepository, ILoggerFactory loggerFactory)
+        /// <param name="logger">The logger.</param>
+        public Helper(IContentRepository contentRepository, IContentSoftLinkRepository contentSoftLinkRepository, IContentTypeRepository contentTypeRepository, ILogger<Helper> logger)
         {
-            ContentRepository = contentRepository;
-            ContentSoftLinkRepository = contentSoftLinkRepository;
-            ContentTypeRepository = contentTypeRepository;
-            _logger = loggerFactory.CreateLogger<Helper>();
+            _contentRepository = contentRepository;
+            _contentSoftLinkRepository = contentSoftLinkRepository;
+            _contentTypeRepository = contentTypeRepository;
+            _logger = logger;
         }
 
         /// <summary>
@@ -72,29 +71,12 @@ namespace EPi.Libraries.BlockSearch
         {
             ArgumentNullException.ThrowIfNull(serviceProvider);
 
-            ContentRepository = serviceProvider.GetRequiredService<IContentRepository>();
-            ContentSoftLinkRepository = serviceProvider.GetRequiredService<IContentSoftLinkRepository>();
-            ContentTypeRepository = serviceProvider.GetRequiredService<IContentTypeRepository>();
+            _contentRepository = serviceProvider.GetRequiredService<IContentRepository>();
+            _contentSoftLinkRepository = serviceProvider.GetRequiredService<IContentSoftLinkRepository>();
+            _contentTypeRepository = serviceProvider.GetRequiredService<IContentTypeRepository>();
+            _logger = serviceProvider.GetRequiredService<ILogger<Helper>>();
         }
-
-        /// <summary>
-        /// Gets the content repository.
-        /// </summary>
-        /// <value>The content repository.</value>
-        private IContentRepository ContentRepository { get; }
-
-        /// <summary>
-        /// Gets the content soft link repository.
-        /// </summary>
-        /// <value>The content soft link repository.</value>
-        private IContentSoftLinkRepository ContentSoftLinkRepository { get; }
-
-        /// <summary>
-        ///     Gets the content type repository.
-        /// </summary>
-        /// <value>The content type repository.</value>
-        private IContentTypeRepository ContentTypeRepository { get; }
-
+        
         /// <summary>
         /// Updates the parents.
         /// </summary>
@@ -102,7 +84,7 @@ namespace EPi.Libraries.BlockSearch
         public void UpdateParents(ContentReference contentLink)
         {
             // Get the references to this block
-            List<ContentReference> referencingContentLinks = ContentSoftLinkRepository.Load(contentLink: contentLink, reversed: true)
+            List<ContentReference> referencingContentLinks = _contentSoftLinkRepository.Load(contentLink: contentLink, reversed: true)
                     .Where(
                         link =>
                         link.SoftLinkType == ReferenceType.PageLinkReference
@@ -113,7 +95,7 @@ namespace EPi.Libraries.BlockSearch
             // Loop through each reference
             foreach (ContentReference referencingContentLink in referencingContentLinks)
             {
-                ContentRepository.TryGet(contentLink: referencingContentLink, content: out PageData parent);
+                _contentRepository.TryGet(contentLink: referencingContentLink, content: out PageData parent);
 
                 // If it is not page data, do nothing
                 if (parent == null)
@@ -132,7 +114,7 @@ namespace EPi.Libraries.BlockSearch
                 // Republish the containing page.
                 try
                 {
-                    ContentRepository.Save(
+                    _contentRepository.Save(
                             parent.CreateWritableClone(),
                             SaveAction.Publish | SaveAction.ForceCurrentVersion | SaveAction.SkipValidation,
                             access: AccessLevel.NoAccess);
@@ -164,7 +146,7 @@ namespace EPi.Libraries.BlockSearch
 
             StringBuilder stringBuilder = new();
 
-            ContentType contentType = ContentTypeRepository.Load(id: parent.ContentTypeID);
+            ContentType contentType = _contentTypeRepository.Load(id: parent.ContentTypeID);
 
             foreach (PropertyDefinition current in from d in contentType.PropertyDefinitions
                                                    where typeof(PropertyContentArea).IsAssignableFrom(
@@ -221,7 +203,7 @@ namespace EPi.Libraries.BlockSearch
 
             foreach (ContentAreaItem contentAreaItem in contentArea.Items)
             {
-                if (!ContentRepository.TryGet(contentLink: contentAreaItem.ContentLink, content: out IContent content))
+                if (!_contentRepository.TryGet(contentLink: contentAreaItem.ContentLink, content: out IContent content))
                 {
                     continue;
                 }
@@ -276,21 +258,22 @@ namespace EPi.Libraries.BlockSearch
                 yield break;
             }
 
-            foreach (PropertyDefinition current in from d in contentType.PropertyDefinitions
-                                                   where d.IndexingType == IndexingType.Searchable
-                                                         || typeof(IPropertyBlock).IsAssignableFrom(
-                                                             c: d.Type.DefinitionType)
-                                                   select d)
+            var definitions = from d in contentType.PropertyDefinitions
+                where d.IndexingType == IndexingType.Searchable ||
+                      typeof(IPropertyBlock).IsAssignableFrom(c: d.Type.DefinitionType)
+                select d;
+
+            foreach (PropertyDefinition current in definitions)
             {
                 PropertyData propertyData = contentData.Property[name: current.Name];
 
                 if (propertyData is IPropertyBlock propertyBlock)
                 {
-                    foreach (string current2 in GetSearchablePropertyValues(
+                    foreach (string propertyValues in GetSearchablePropertyValues(
                         propertyBlock.Block,
                         propertyBlock.ItemTypeReference.GUID))
                     {
-                        yield return current2;
+                        yield return propertyValues;
                     }
                 }
                 else
@@ -310,7 +293,7 @@ namespace EPi.Libraries.BlockSearch
         {
             return GetSearchablePropertyValues(
                 contentData: contentData,
-                contentType: ContentTypeRepository.Load(contentTypeGuid));
+                contentType: _contentTypeRepository.Load(contentTypeGuid));
         }
 
         /// <summary>
@@ -323,7 +306,7 @@ namespace EPi.Libraries.BlockSearch
         {
             return GetSearchablePropertyValues(
                 contentData: contentData,
-                contentType: ContentTypeRepository.Load(contentTypeId));
+                contentType: _contentTypeRepository.Load(contentTypeId));
         }
 
         /// <summary>
