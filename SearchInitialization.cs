@@ -26,7 +26,6 @@ namespace EPi.Libraries.BlockSearch
     using EPiServer.Core;
     using EPiServer.Framework;
     using EPiServer.Framework.Initialization;
-    using EPiServer.Logging;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -151,8 +150,11 @@ namespace EPi.Libraries.BlockSearch
         /// </remarks>
         public void Uninitialize(InitializationEngine context)
         {
-            this.ContentEvents.PublishedContent -= this.OnPublishedContent;
-            this.ContentEvents.PublishingContent -= this.OnPublishingContent;
+            if (this.ContentEvents != null)
+            {
+                this.ContentEvents.PublishedContent -= this.OnPublishedContent;
+                this.ContentEvents.PublishingContent -= this.OnPublishingContent;
+            }
 
             this.Logger.LogInformation("[Blocksearch] Uninitialized");
         }

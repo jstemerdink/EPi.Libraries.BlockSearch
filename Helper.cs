@@ -174,16 +174,14 @@ namespace EPi.Libraries.BlockSearch
                 HtmlFilter htmlFilter = new(FilterRules.StripHtml);
 
                 StringBuilder filteredOutput = new();
-                StringWriter outputWriter = new(filteredOutput);
 
-                htmlFilter.FilterHtml(new StringReader(stringBuilder.ToString()), outputWriter);
-                outputWriter.Dispose();
-                
-                string additionalSearchContent = filteredOutput.ToString();
-                
-                parent[index: additionalSearchContentProperty.Name] = additionalSearchContent;
+                using (StringReader inputReader = new(stringBuilder.ToString()))
+                using (StringWriter outputWriter = new(filteredOutput))
+                {
+                    htmlFilter.FilterHtml(inputReader, outputWriter);
+                }
 
-                outputWriter.Dispose();
+                parent[index: additionalSearchContentProperty.Name] = filteredOutput.ToString();
             }
             catch (EPiServerException epiServerException)
             {
